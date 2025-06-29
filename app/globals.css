@@ -94,4 +94,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-body { border: 10px solid red; }
