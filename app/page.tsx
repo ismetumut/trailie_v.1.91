@@ -9,15 +9,24 @@ import { AdminPanel } from '@/components/company/AdminPanel';
 import SimulationIntro from '@/components/simulation/simulation-intro';
 import PricingStrategyTask from '@/components/simulation/pricing-strategy-task';
 import OnepagerTask from '@/components/simulation/onepager-task';
+import PresentationTask from '@/components/simulation/presentation-task';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { Menu, Home, User, Briefcase, Target, Users, Settings, LogOut, BarChart3, Bell, UserCircle, Mail, Shield, HelpCircle, TrendingUp, Users2, Palette, Code, Play } from 'lucide-react';
+import AIReport from '@/components/AIReport';
+import AIReportModal from '@/components/AIReportModal';
+import CareerDashboard from '@/components/CareerDashboard';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import ModuleMenu from '@/components/ModuleMenu';
+import TopBar from '@/components/TopBar';
+import { useLanguage } from '@/contexts/LanguageContext';
+import AISimulationReport from '@/components/AISimulationReport';
 
 type UserType = 'individual' | 'company';
-type AppState = 'login' | 'assessment' | 'expertise' | 'admin' | 'dashboard' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-complete';
+type AppState = 'login' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'dashboard' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete';
 
 interface DISCProfile {
   dominant: 'D' | 'I' | 'S' | 'C';
@@ -76,42 +85,82 @@ const DISC_DESCRIPTIONS = {
   }
 };
 
-const EXPERTISE_DESCRIPTIONS = {
-  Marketing: {
-    title: 'Marketing Specialist',
-    description: 'Dijital pazarlama stratejileri geliştiren, veri odaklı kampanyalar yöneten ve marka bilinirliğini artıran uzman. Rakip analizleri, içerik planlaması ve ROI optimizasyonu konularında uzmanlaşmış.',
-    color: '#ef4444',
-    traits: ['Veri Analizi', 'Stratejik Düşünme', 'Yaratıcılık', 'Sonuç Odaklılık'],
-    careers: ['Digital Marketing Manager', 'Content Marketing Specialist', 'SEO Specialist', 'Growth Hacker'],
-    tools: ['Google Analytics', 'Meta Ads', 'Mailchimp', 'HubSpot'],
-    responsibilities: ['Kampanya stratejisi oluşturma', 'Hedef kitle analizi', 'İçerik planlaması', 'ROI optimizasyonu']
+const EXPERTISE_REPORT = {
+  tr: {
+    Marketing: {
+      title: 'Pazarlama Uzmanı',
+      desc: 'Dijital pazarlama stratejileri geliştiren, veri odaklı kampanyalar yöneten ve marka bilinirliğini artıran uzman.',
+      color: '#ef4444',
+      traits: ['Veri Analizi', 'Stratejik Düşünme', 'Yaratıcılık', 'Sonuç Odaklılık'],
+      careers: ['Dijital Pazarlama Yöneticisi', 'İçerik Pazarlama Uzmanı', 'SEO Uzmanı', 'Growth Hacker'],
+      tools: ['Google Analytics', 'Meta Ads', 'Mailchimp', 'HubSpot'],
+      analysis: 'Veri analizi ve stratejik bakış açısı ile öne çıkıyorsunuz. Yaratıcı fikirler ve sonuç odaklılık güçlü yönleriniz.'
+    },
+    Sales: {
+      title: 'Satış Uzmanı',
+      desc: 'Müşteri ihtiyaçlarını analiz eden, ikna edici sunumlar yapan ve satış hedeflerine ulaşan profesyonel.',
+      color: '#f59e42',
+      traits: ['İkna Kabiliyeti', 'İletişim', 'Müzakere', 'Müşteri Odaklılık'],
+      careers: ['Satış Müdürü', 'Müşteri Temsilcisi', 'İş Geliştirme', 'Account Executive'],
+      tools: ['CRM', 'Zoom', 'PowerPoint', 'LinkedIn Sales Navigator'],
+      analysis: 'İletişim ve ikna kabiliyetiniz ile satış süreçlerinde başarılısınız. Müşteri odaklı yaklaşımınız öne çıkıyor.'
+    },
+    Brand: {
+      title: 'Marka Yöneticisi',
+      desc: 'Marka kimliğini oluşturan, marka değerini artıran ve tutarlı iletişim stratejileri geliştiren uzman.',
+      color: '#10b981',
+      traits: ['Yaratıcılık', 'Görsel Algı', 'Stratejik Düşünme', 'Tutarlılık'],
+      careers: ['Brand Manager', 'Creative Director', 'Visual Designer', 'Social Media Manager'],
+      tools: ['Canva', 'Figma', 'Instagram Insights', 'Adobe Creative Suite'],
+      analysis: 'Yaratıcılığınız ve marka algısı yönetiminiz ile öne çıkıyorsunuz. Tutarlılık ve görsel algı güçlü yönleriniz.'
+    },
+    Product: {
+      title: 'Ürün Yöneticisi',
+      desc: 'Ürün yaşam döngüsünü yöneten, kullanıcı ihtiyaçlarını analiz eden ve ürün stratejisi geliştiren profesyonel.',
+      color: '#3b82f6',
+      traits: ['Analitik Düşünce', 'Süreç Yönetimi', 'Problem Çözme', 'Kullanıcı Odaklılık'],
+      careers: ['Product Manager', 'Product Owner', 'UX Designer', 'Business Analyst'],
+      tools: ['Jira', 'Notion', 'Miro', 'Figma'],
+      analysis: 'Analitik düşünceniz ve süreç yönetimi beceriniz ile ürün geliştirme süreçlerinde başarılısınız.'
+    }
   },
-  Sales: {
-    title: 'Sales Specialist',
-    description: 'Müşteri ihtiyaçlarını analiz eden, ikna edici sunumlar yapan ve satış hedeflerine ulaşan profesyonel. İlişki yönetimi, müzakere ve müşteri memnuniyeti konularında uzman.',
-    color: '#f59e42',
-    traits: ['İkna Kabiliyeti', 'İletişim', 'Müzakere', 'Müşteri Odaklılık'],
-    careers: ['Sales Manager', 'Account Executive', 'Business Development', 'Customer Success Manager'],
-    tools: ['CRM', 'Zoom', 'PowerPoint', 'LinkedIn Sales Navigator'],
-    responsibilities: ['Müşteri ihtiyaç analizi', 'Satış sunumları', 'İlişki yönetimi', 'Hedef takibi']
-  },
-  Brand: {
-    title: 'Brand Manager',
-    description: 'Marka kimliğini oluşturan, marka değerini artıran ve tutarlı iletişim stratejileri geliştiren uzman. Yaratıcılık, görsel tasarım ve marka algısı yönetimi konularında uzmanlaşmış.',
-    color: '#10b981',
-    traits: ['Yaratıcılık', 'Görsel Algı', 'Stratejik Düşünme', 'Tutarlılık'],
-    careers: ['Brand Manager', 'Creative Director', 'Visual Designer', 'Social Media Manager'],
-    tools: ['Canva', 'Figma', 'Instagram Insights', 'Adobe Creative Suite'],
-    responsibilities: ['Marka kimliği oluşturma', 'Görsel tasarım yönetimi', 'Sosyal medya stratejisi', 'Marka tutarlılığı']
-  },
-  Product: {
-    title: 'Product Manager',
-    description: 'Ürün yaşam döngüsünü yöneten, kullanıcı ihtiyaçlarını analiz eden ve ürün stratejisi geliştiren profesyonel. Veri analizi, süreç yönetimi ve kullanıcı deneyimi konularında uzman.',
-    color: '#3b82f6',
-    traits: ['Analitik Düşünce', 'Süreç Yönetimi', 'Problem Çözme', 'Kullanıcı Odaklılık'],
-    careers: ['Product Manager', 'Product Owner', 'UX Designer', 'Business Analyst'],
-    tools: ['Jira', 'Notion', 'Miro', 'Figma'],
-    responsibilities: ['Ürün yol haritası', 'Kullanıcı araştırması', 'Süreç optimizasyonu', 'Stakeholder yönetimi']
+  en: {
+    Marketing: {
+      title: 'Marketing Specialist',
+      desc: 'Expert in developing digital marketing strategies, managing data-driven campaigns, and increasing brand awareness.',
+      color: '#ef4444',
+      traits: ['Data Analysis', 'Strategic Thinking', 'Creativity', 'Results-Oriented'],
+      careers: ['Digital Marketing Manager', 'Content Marketing Specialist', 'SEO Specialist', 'Growth Hacker'],
+      tools: ['Google Analytics', 'Meta Ads', 'Mailchimp', 'HubSpot'],
+      analysis: 'You stand out with your data analysis and strategic perspective. Creativity and results-orientation are your strengths.'
+    },
+    Sales: {
+      title: 'Sales Specialist',
+      desc: 'Professional who analyzes customer needs, makes persuasive presentations, and achieves sales targets.',
+      color: '#f59e42',
+      traits: ['Persuasion', 'Communication', 'Negotiation', 'Customer-Focused'],
+      careers: ['Sales Manager', 'Account Executive', 'Business Development', 'Customer Success Manager'],
+      tools: ['CRM', 'Zoom', 'PowerPoint', 'LinkedIn Sales Navigator'],
+      analysis: 'You are successful in sales processes with your communication and persuasion skills. Customer-oriented approach is your strength.'
+    },
+    Brand: {
+      title: 'Brand Manager',
+      desc: 'Expert who creates brand identity, increases brand value, and develops consistent communication strategies.',
+      color: '#10b981',
+      traits: ['Creativity', 'Visual Perception', 'Strategic Thinking', 'Consistency'],
+      careers: ['Brand Manager', 'Creative Director', 'Visual Designer', 'Social Media Manager'],
+      tools: ['Canva', 'Figma', 'Instagram Insights', 'Adobe Creative Suite'],
+      analysis: 'You stand out with your creativity and brand perception management. Consistency and visual perception are your strengths.'
+    },
+    Product: {
+      title: 'Product Manager',
+      desc: 'Professional who manages product lifecycle, analyzes user needs, and develops product strategy.',
+      color: '#3b82f6',
+      traits: ['Analytical Thinking', 'Process Management', 'Problem Solving', 'User-Focused'],
+      careers: ['Product Manager', 'Product Owner', 'UX Designer', 'Business Analyst'],
+      tools: ['Jira', 'Notion', 'Miro', 'Figma'],
+      analysis: 'You are successful in product development processes with your analytical thinking and process management skills.'
+    }
   }
 };
 
@@ -160,7 +209,7 @@ const discQuestionsEN = [
   {
     id: 5,
     text: "Which achievement makes you happiest?",
-    options: [
+      options: [
       { text: "Achieving a tough goal", type: "D" as const },
       { text: "Being recognized by people", type: "I" as const },
       { text: "Gaining the team's trust", type: "S" as const },
@@ -234,7 +283,7 @@ const discQuestionsTR = [
     {
       id: 2,
     text: "Yeni bir projeye başlarken ilk adımın nedir?",
-    options: [
+      options: [
       { text: "Öncelikleri belirler, ilerlemeye başlarım.", type: "D" as const },
       { text: "Ekibin motivasyonunu artırırım.", type: "I" as const },
       { text: "Herkesin sürece alışmasına yardımcı olurum.", type: "S" as const },
@@ -244,7 +293,7 @@ const discQuestionsTR = [
     {
       id: 3,
     text: "Stres altında nasıl davranırsın?",
-    options: [
+      options: [
       { text: "Kontrolü ele alırım.", type: "D" as const },
       { text: "Rahat bir atmosfer yaratmaya çalışırım.", type: "I" as const },
       { text: "Sakin kalır, anlayışlı olurum.", type: "S" as const },
@@ -387,71 +436,32 @@ const expertiseQuestionsEN = [
   }
 ];
 
-const EXPERTISE_DESCRIPTIONS_EN = {
-  Marketing: {
-    title: 'Marketing Specialist',
-    description: 'Expert who develops digital marketing strategies, manages data-driven campaigns, and increases brand awareness. Specialized in competitor analysis, content planning, and ROI optimization.',
-    color: '#ef4444',
-    traits: ['Data Analysis', 'Strategic Thinking', 'Creativity', 'Results-Oriented'],
-    careers: ['Digital Marketing Manager', 'Content Marketing Specialist', 'SEO Specialist', 'Growth Hacker'],
-    tools: ['Google Analytics', 'Meta Ads', 'Mailchimp', 'HubSpot'],
-    responsibilities: ['Campaign strategy creation', 'Target audience analysis', 'Content planning', 'ROI optimization']
-  },
-  Sales: {
-    title: 'Sales Specialist',
-    description: 'Professional who analyzes customer needs, makes persuasive presentations, and achieves sales targets. Expert in relationship management, negotiation, and customer satisfaction.',
-    color: '#f59e42',
-    traits: ['Persuasion', 'Communication', 'Negotiation', 'Customer-Focused'],
-    careers: ['Sales Manager', 'Account Executive', 'Business Development', 'Customer Success Manager'],
-    tools: ['CRM', 'Zoom', 'PowerPoint', 'LinkedIn Sales Navigator'],
-    responsibilities: ['Customer need analysis', 'Sales presentations', 'Relationship management', 'Target tracking']
-  },
-  Brand: {
-    title: 'Brand Manager',
-    description: 'Expert who creates brand identity, increases brand value, and develops consistent communication strategies. Specialized in creativity, visual design, and brand perception management.',
-    color: '#10b981',
-    traits: ['Creativity', 'Visual Perception', 'Strategic Thinking', 'Consistency'],
-    careers: ['Brand Manager', 'Creative Director', 'Visual Designer', 'Social Media Manager'],
-    tools: ['Canva', 'Figma', 'Instagram Insights', 'Adobe Creative Suite'],
-    responsibilities: ['Brand identity creation', 'Visual design management', 'Social media strategy', 'Brand consistency']
-  },
-  Product: {
-    title: 'Product Manager',
-    description: 'Professional who manages product lifecycle, analyzes user needs, and develops product strategy. Expert in data analysis, process management, and user experience.',
-    color: '#3b82f6',
-    traits: ['Analytical Thinking', 'Process Management', 'Problem Solving', 'User-Focused'],
-    careers: ['Product Manager', 'Product Owner', 'UX Designer', 'Business Analyst'],
-    tools: ['Jira', 'Notion', 'Miro', 'Figma'],
-    responsibilities: ['Product roadmap', 'User research', 'Process optimization', 'Stakeholder management']
-  }
-};
-
 // Expertise Questions (TR)
 const expertiseQuestionsTR = [
-  {
-    id: 1,
-    text: "En çok hangi tür iş seni motive eder?",
-    options: [
-      { text: "Yeni fikirler üretip pazara sunmak", type: "Marketing" as const },
-      { text: "Müşteriyle birebir iletişim kurup ikna etmek", type: "Sales" as const },
-      { text: "Bir markanın kimliğini oluşturmak ve büyütmek", type: "Brand" as const },
-      { text: "Ürün sürecinin her adımında yer almak", type: "Product" as const }
+    {
+      id: 1,
+    text: "Hangisi işin en çok seni motive eden?",
+      options: [
+      { text: "Yeni fikirler üretmek ve bunları pazarlamak", type: "Marketing" as const },
+      { text: "Müşterilerle doğrudan iletişim kurmak ve ikna etmek", type: "Sales" as const },
+      { text: "Marka kimliğini oluşturmak ve artırmak", type: "Brand" as const },
+      { text: "Ürün yaşam döngüsünün her adımında bulunmak", type: "Product" as const }
     ]
-  },
-  {
-    id: 2,
-    text: "Bir projede aşağıdakilerden hangisi seni daha çok çeker?",
-    options: [
-      { text: "Rakip analizleri ve içerik planı oluşturmak", type: "Marketing" as const },
-      { text: "Müşteri ihtiyaçlarını belirleyip çözüm sunmak", type: "Sales" as const },
-      { text: "Marka algısını yaratmak ve sürdürülebilir kılmak", type: "Brand" as const },
-      { text: "Kullanıcı geri bildirimleriyle ürünü geliştirmek", type: "Product" as const }
+    },
+    {
+      id: 2,
+    text: "Aşağıdakilerden hangisi bir projede en çok sana çekici görünür?",
+      options: [
+      { text: "Rakip analizleri ve içerik planlaması", type: "Marketing" as const },
+      { text: "Müşteri ihtiyaçlarını analiz etmek ve çözümler sunmak", type: "Sales" as const },
+      { text: "Marka algısını oluşturmak ve korumak", type: "Brand" as const },
+      { text: "Kullanıcı geri bildirimleri ile ürün geliştirmek", type: "Product" as const }
     ]
-  },
-  {
-    id: 3,
-    text: "Aşağıdaki araçlardan hangilerini daha çok kullanmak isterdin?",
-    options: [
+    },
+    {
+      id: 3,
+    text: "Hangisi işte daha fazla kullanılmasını tercih edersin?",
+      options: [
       { text: "Google Analytics, Meta Ads, Mailchimp", type: "Marketing" as const },
       { text: "CRM, Zoom, PowerPoint", type: "Sales" as const },
       { text: "Canva, Figma, Instagram Insights", type: "Brand" as const },
@@ -460,1001 +470,340 @@ const expertiseQuestionsTR = [
   },
   {
     id: 4,
-    text: "Bir kampanya ya da ürün lansmanında senin için en kritik aşama nedir?",
+    text: "Kampanya veya ürün piyasaya çıkarılırken en kritik aşaması hangisi?",
     options: [
-      { text: "Hedef kitleye uygun mesajı bulmak", type: "Marketing" as const },
-      { text: "Satışa dönüştürecek sunumu yapmak", type: "Sales" as const },
-      { text: "Markanın bütünlüğünü koruyarak iletişim kurmak", type: "Brand" as const },
-      { text: "Teknik detayların ve zamanlamanın kusursuz olması", type: "Product" as const }
+      { text: "Hedef kitle için doğru mesajı bulmak", type: "Marketing" as const },
+      { text: "Satışa dönüştüren sunumlar yapmak", type: "Sales" as const },
+      { text: "Marka tutarlılığını korumak iletişim sürecinde", type: "Brand" as const },
+      { text: "Mükemmel teknik ayrıntıları ve zamanı", type: "Product" as const }
     ]
   },
   {
     id: 5,
-    text: "Şirket içinde en çok kimlerle çalışmak istersin?",
+    text: "Şirket içinde en çok işbirliği içinde çalışmak istediğin kişi hangisi?",
     options: [
-      { text: "İçerik üreticileri, reklam ajansları", type: "Marketing" as const },
-      { text: "Satış ekipleri, müşteri temsilcileri", type: "Sales" as const },
-      { text: "Kreatif ekip, sosyal medya yöneticileri", type: "Brand" as const },
-      { text: "Yazılımcılar, tasarımcılar, veri analistleri", type: "Product" as const }
+      { text: "İçerik oluşturucular, reklam ajansları", type: "Marketing" as const },
+      { text: "Satış ekibi, müşteri temsilcileri", type: "Sales" as const },
+      { text: "Yaratıcı ekib, sosyal medya yöneticileri", type: "Brand" as const },
+      { text: "Geliştiriciler, tasarımcılar, veri analistleri", type: "Product" as const }
     ]
   },
   {
     id: 6,
-    text: "Bir gününü aşağıdakilerden hangisiyle geçirmek sana daha anlamlı gelir?",
+    text: "Hangisi gününüzü daha anlamlı kılacak?",
     options: [
-      { text: "Dijital kampanya stratejisi oluşturmak", type: "Marketing" as const },
-      { text: "Potansiyel müşterilere çözüm sunmak", type: "Sales" as const },
+      { text: "Dijital kampanya stratejileri oluşturmak", type: "Marketing" as const },
+      { text: "Potansiyel müşterilere çözümler sunmak", type: "Sales" as const },
       { text: "Marka hikayesini şekillendirmek", type: "Brand" as const },
-      { text: "Ürün yol haritası çıkarmak ve önceliklendirmek", type: "Product" as const }
+      { text: "Ürün yol haritasını ve önceliklendirmeyi eşleştirmek", type: "Product" as const }
     ]
   }
 ];
 
 // --- Uygulamanın tamamı aşağıda ---
 
-export default function CareerDiscoveryApp() {
-  const { isAuthenticated, userType, setAuthUserType } = useAuth();
-  const [appState, setAppState] = useState<AppState>('login');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [discResults, setDiscResults] = useState<DISCProfile | null>(null);
-  const [expertiseResults, setExpertiseResults] = useState<ExpertiseProfile | null>(null);
-  const [notificationCount, setNotificationCount] = useState(3); // Demo için
-  const [lang, setLang] = useState<'en' | 'tr'>('tr');
-  
-  // Simulation states
-  const [pricingResult, setPricingResult] = useState<any>(null);
-  const [onepagerResult, setOnepagerResult] = useState<any>(null);
+export default function Page() {
+  const { user, userType, setAuthUserType } = useAuth();
+  const [appState, setAppState] = useState<'login' | 'dashboard' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete'>('login');
+  const [discResult, setDiscResult] = useState<any>(null);
+  const [expertiseResult, setExpertiseResult] = useState<any>(null);
+  const [dashboardKey, setDashboardKey] = useState(0);
+  const { language } = useLanguage();
 
-  const handleLoginSuccess = (type?: UserType) => {
-    if (type === 'company') {
-      setAuthUserType('company');
-      setAppState('admin');
-    } else {
-      setAuthUserType('individual');
-      setAppState('assessment');
+  // Tüm metinleri iki dilde tanımla
+  const TEXT = {
+    tr: {
+      discResultTitle: '🎯 DISC Kişilik Profiliniz',
+      discResultDesc: 'Kişilik envanterinizin sonuçları aşağıdadır',
+      strengths: '💪 Güçlü Özellikler',
+      careers: 'Uygun Kariyerler',
+      tools: '🛠️ Önerilen Araçlar',
+      analysis: '🔎 Kişilik Analizi',
+      continue: '🚀 Devam Et',
+      home: '🏠 Ana Sayfa',
+      aiReport: '🤖 AI Raporu',
+      strengthsLabel: 'Güçlü Yönler:',
+      devAreas: 'Gelişim Alanları:',
+      devAreasText: 'Esneklik ve spontanlık, Sosyal etkileşim',
+    },
+    en: {
+      discResultTitle: '🎯 Your DISC Personality Profile',
+      discResultDesc: 'Your personality inventory results are below',
+      strengths: '💪 Strengths',
+      careers: 'Suitable Careers',
+      tools: '🛠️ Recommended Tools',
+      analysis: '🔎 Personality Analysis',
+      continue: '🚀 Continue',
+      home: '🏠 Home',
+      aiReport: '🤖 AI Report',
+      strengthsLabel: 'Strengths:',
+      devAreas: 'Development Areas:',
+      devAreasText: 'Flexibility and spontaneity, Social interaction',
     }
   };
 
-  const handleAssessmentComplete = (answers: Record<number, number>, discProfile: DISCProfile) => {
-    setDiscResults(discProfile);
-    setAppState('results');
+  // DISC açıklamaları iki dilde
+  const DISC_DESCRIPTIONS_ALL = {
+    tr: DISC_DESCRIPTIONS,
+    en: {
+      D: {
+        title: 'Dominant (D)',
+        description: 'Goal-oriented, quick decision-maker, strong leadership. Not afraid of challenges, loves competition.',
+        color: '#ef4444',
+        traits: ['Leadership', 'Decisiveness', 'Result-Oriented', 'Courage'],
+        careers: ['Manager', 'Entrepreneur', 'Project Leader', 'Sales Manager'],
+        tools: ['Jira', 'Trello', 'Slack', 'CRM']
+      },
+      I: {
+        title: 'Influencer (I)',
+        description: 'High communication skills, social, energetic, successful in human relations. Increases teamwork and motivation.',
+        color: '#f59e42',
+        traits: ['Communication', 'Motivation', 'Creativity', 'Persuasion'],
+        careers: ['Marketing Specialist', 'Trainer', 'PR', 'Event Manager'],
+        tools: ['Canva', 'Instagram', 'Mailchimp', 'Zoom']
+      },
+      S: {
+        title: 'Steady (S)',
+        description: 'Calm, patient, reliable, and supportive. Brings balance to the team, stable.',
+        color: '#10b981',
+        traits: ['Patience', 'Support', 'Loyalty', 'Stability'],
+        careers: ['HR Specialist', 'Consultant', 'Coach', 'Customer Rep'],
+        tools: ['Notion', 'Teams', 'Google Drive', 'Zendesk']
+      },
+      C: {
+        title: 'Compliant (C)',
+        description: 'Detail-oriented, analytical, rule-based, perfectionist. Successful in planning and analysis.',
+        color: '#3b82f6',
+        traits: ['Analytical Thinking', 'Attention', 'Planning', 'Perfectionism'],
+        careers: ['Finance Specialist', 'Analyst', 'Engineer', 'Auditor'],
+        tools: ['Excel', 'Tableau', 'Asana', 'Google Analytics']
+      }
+    }
   };
 
-  const handleExpertiseComplete = (answers: Record<number, number>, expertiseProfile: ExpertiseProfile) => {
-    setExpertiseResults(expertiseProfile);
-    setAppState('expertise-results');
+  // Soru setleri iki dilde
+  const discQuestions = language === 'tr' ? discQuestionsTR : discQuestionsEN;
+  const expertiseQuestions = language === 'tr' ? expertiseQuestionsTR : expertiseQuestionsEN;
+  const DISC_DESCRIPTIONS_LANG = DISC_DESCRIPTIONS_ALL[language];
+  const t = TEXT[language];
+
+  // Hamburger menüden modül seçimi
+  const handleModuleSelect = (module: string) => {
+    switch (module) {
+      case 'personality':
+        setAppState('assessment');
+        break;
+      case 'expertise':
+        setAppState('expertise');
+        break;
+      case 'role':
+      case 'simulation':
+        setAppState('simulation');
+        break;
+      case 'cv':
+        // CV modülüne yönlendirme eklenebilir
+        break;
+      case 'jobs':
+        // İş ilanları modülüne yönlendirme eklenebilir
+        break;
+      case 'interview':
+        // Mülakat modülüne yönlendirme eklenebilir
+        break;
+      case 'networking':
+        // Networking modülüne yönlendirme eklenebilir
+        break;
+      case 'coaching':
+        // Koçluk modülüne yönlendirme eklenebilir
+        break;
+      case 'dashboard':
+        setAppState('dashboard');
+        setDashboardKey(Math.random());
+        break;
+      default:
+        setAppState('dashboard');
+    }
   };
 
-  const handleSimulationStart = () => {
-    // Simülasyon başlatma işlemi burada yapılacak
-    console.log('Simulation started');
-    setAppState('simulation-pricing');
-  };
-
-  const handlePricingComplete = (result: any) => {
-    setPricingResult(result);
-    setAppState('simulation-onepager');
-  };
-
-  const handleOnepagerComplete = (result: any) => {
-    setOnepagerResult(result);
-    setAppState('simulation-complete');
-  };
-
-  const handleSimulationComplete = () => {
-    setAppState('dashboard');
-  };
-
-  const handleNotifications = () => {
-    setNotificationCount(0);
-  };
-
-  const handleLogout = () => {
-    setAuthUserType(null);
-    setAppState('login');
-  };
-
-  // Giriş ekranı kontrolü
-  if (!isAuthenticated) {
-    return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
-  }
-
-  // Menü tanımları
-  const menuItems = [
-    { icon: Home, label: 'Ana Sayfa', action: () => setAppState('dashboard') },
-    { icon: User, label: 'Kişilik Envanteri', action: () => setAppState('assessment') },
-    { icon: Target, label: 'Uzmanlık Analizi', action: () => setAppState('expertise') },
-    { icon: Play, label: 'Rol Simülasyonu', action: () => setAppState('simulation') },
-    { icon: Briefcase, label: 'İş Arama', action: () => {} },
-    { icon: Users, label: 'Networking', action: () => {} },
-    { icon: Settings, label: 'Ayarlar', action: () => {} },
-  ];
-  const companyMenuItems = [
-    { icon: Home, label: 'Ana Sayfa', action: () => setAppState('admin') },
-    { icon: Users, label: 'CV Veritabanı', action: () => {} },
-    { icon: Briefcase, label: 'İlan Yönetimi', action: () => {} },
-    { icon: Target, label: 'Aday Analizi', action: () => {} },
-    { icon: Settings, label: 'Firma Ayarları', action: () => {} },
-  ];
-
+  // Tüm ekranlarda hamburger menü görünür olacak şekilde üstte render et
     return (
-    <div className="min-h-screen bg-gradient-to-br from-[#eaf6f2] to-[#d1f2e6]">
-      {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-10">
-        <div className="flex items-center justify-between p-4 max-w-4xl mx-auto">
-          {/* Left - Hamburger Menu */}
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="p-2 rounded-lg hover:bg-gray-100">
-                <Menu className="w-6 h-6 text-gray-600" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-80 bg-white/95 backdrop-blur-sm">
-              <SheetHeader>
-                <SheetTitle className="text-left text-xl font-bold text-gray-800">
-                  {userType === 'company' ? 'Firma Paneli' : 'Trailie'}
-                </SheetTitle>
-              </SheetHeader>
-              {(userType === 'company' ? companyMenuItems : menuItems).map((item, index) => (
-          <Button
-                  key={index}
-            variant="ghost"
-                  className="w-full justify-start h-12 text-left font-medium text-gray-700 hover:bg-gray-100"
-                  onClick={() => {
-                    item.action();
-                    setMenuOpen(false);
-                  }}
-                >
-                  <item.icon className="w-5 h-5 mr-3" />
-                  {item.label}
-          </Button>
-              ))}
-              <div className="pt-4 border-t border-gray-200">
-          <Button
-            variant="ghost"
-                  className="w-full justify-start h-12 text-left font-medium text-red-600 hover:bg-red-50"
-                  onClick={handleLogout}
-          >
-                  <LogOut className="w-5 h-5 mr-3" />
-                  Çıkış Yap
-          </Button>
-        </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* Center - Title */}
-          <div className="flex-1 text-center">
-            <h1 className="text-xl font-semibold text-gray-800">
-              {userType === 'company' ? 'Firma Yönetim Paneli' : 'Kariyer Keşfi'}
-            </h1>
-          </div>
-
-          {/* Right - Notifications & Profile */}
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative" onClick={handleNotifications}>
-              <Bell className="w-6 h-6 text-gray-600" />
-              {notificationCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                  {notificationCount}
-          </Badge>
-            )}
-          </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <UserCircle className="w-7 h-7 text-gray-600" />
-          </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {userType === 'company' ? 'Firma Hesabı' : 'Demo Kullanıcı'}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {userType === 'company' ? 'admin@firma.com' : 'demo@trailie.com'}
-                    </p>
-        </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {}}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profil</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>
-                  <Mail className="mr-2 h-4 w-4" />
-                  <span>Mesajlar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Ayarlar</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  <span>Yardım</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Çıkış Yap</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-      </div>
-          </div>
-        </div>
-
-      {/* Main Content */}
-      {appState === 'assessment' && (
-        <PersonalityQuestion
-          questions={lang === 'en' ? discQuestionsEN : discQuestionsTR}
-          onComplete={handleAssessmentComplete}
-        />
-      )}
-      {appState === 'expertise' && (
-        <ExpertiseQuestion
-          questions={lang === 'en' ? expertiseQuestionsEN : expertiseQuestionsTR}
-          onComplete={handleExpertiseComplete}
-        />
-      )}
-      {appState === 'admin' && <AdminPanel />}
-
-      {/* Sonuçlar ekranı */}
-      {appState === 'results' && discResults && (
-        <div className="max-w-4xl mx-auto p-6 space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
-              {lang === 'en' ? '🎯 Your DISC Personality Profile' : '🎯 DISC Kişilik Profiliniz'}
-            </h1>
-            <p className="text-gray-600 text-lg">
-              {lang === 'en' ? 'Your personality assessment results are below' : 'Kişilik envanterinizin sonuçları aşağıdadır'}
-            </p>
-            </div>
-
-          {/* Ana Profil Kartı */}
-          <Card className="p-8 bg-white/95 backdrop-blur-sm shadow-xl border-0">
-            <div className="text-center mb-8">
-              {/* Dominant Type Badge */}
-              <div className="inline-flex items-center px-8 py-4 rounded-full text-white font-bold text-2xl mb-6 shadow-lg" 
-                   style={{ backgroundColor: DISC_DESCRIPTIONS[discResults.dominant].color }}>
-                <span className="mr-3 text-3xl">
-                  {discResults.dominant === 'D' ? '⚡' : 
-                   discResults.dominant === 'I' ? '🌟' : 
-                   discResults.dominant === 'S' ? '🤝' : '📊'}
-                </span>
-                {DISC_DESCRIPTIONS[discResults.dominant].title}
-            </div>
-
-              {/* Description */}
-              <p className="text-gray-700 text-xl leading-relaxed max-w-3xl mx-auto mb-8">
-                {DISC_DESCRIPTIONS[discResults.dominant].description}
-              </p>
-            </div>
-
-            {/* Scores Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {(['D', 'I', 'S', 'C'] as const).map((type) => (
-                <div key={type} className={`p-4 rounded-lg text-center ${
-                  type === discResults.dominant 
-                    ? 'ring-2 ring-offset-2' 
-                    : 'bg-gray-50'
-                }`} style={{
-                  backgroundColor: type === discResults.dominant 
-                    ? `${DISC_DESCRIPTIONS[type].color}20` 
-                    : undefined,
-                  borderColor: type === discResults.dominant 
-                    ? DISC_DESCRIPTIONS[type].color 
-                    : undefined
-                }}>
-                  <div className="text-2xl font-bold mb-2" style={{ color: DISC_DESCRIPTIONS[type].color }}>
-                    {discResults.scores[type]}
-        </div>
-                  <div className="text-sm font-medium text-gray-600">
-                    {DISC_DESCRIPTIONS[type].title.split(' ')[0]}
-                </div>
+    <>
+      <div className="pt-14">
+        {user || userType ? <TopBar onModuleSelect={handleModuleSelect} /> : null}
+        <ModuleMenu onSelect={handleModuleSelect} />
+        {(() => {
+          // Giriş yapılmamışsa login ekranı
+          if (!user && !userType) {
+            return <LoginScreen onLoginSuccess={(userType) => {
+              setAuthUserType(userType || 'individual');
+              setAppState('dashboard');
+            }} />;
+          }
+          // Admin paneli
+          if (userType === 'company' && appState === 'admin') {
+            return <AdminPanel />;
+          }
+          // Personality Assessment Sonuç Ekranı
+          if (appState === 'assessment-result' && discResult) {
+            const discType = discResult.dominant as keyof typeof DISC_DESCRIPTIONS_LANG;
+            const discData = DISC_DESCRIPTIONS_LANG[discType];
+            return (
+              <TooltipProvider>
+              <div className="min-h-screen bg-gradient-to-br from-[#eaf6f2] to-[#d1f2e6] flex flex-col items-center py-6 px-2">
+                <div className="w-full max-w-xl bg-white/90 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+                  <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">{t.discResultTitle}</h2>
+                  <div className="text-center text-gray-500 mb-4">{t.discResultDesc}</div>
+                  <div className="flex flex-col items-center mb-4">
+                    <span className="inline-block px-6 py-2 rounded-full text-lg font-bold mb-2" style={{ background: discData.color + '22', color: discData.color }}>{discData.title}</span>
+                    <div className="text-base md:text-lg text-gray-700 mb-2">{discData.description}</div>
               </div>
-              ))}
-                </div>
-
-            {/* Detailed Sections */}
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Traits Section */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="mr-2">💪</span>
-                  {lang === 'en' ? 'Key Strengths' : 'Güçlü Özellikler'}
-                </h3>
-                <div className="space-y-2">
-                  {DISC_DESCRIPTIONS[discResults.dominant].traits.map((trait, index) => (
-                    <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                      <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: DISC_DESCRIPTIONS[discResults.dominant].color }}></div>
-                      <span className="font-medium text-gray-700">{trait}</span>
-                </div>
-                  ))}
-              </div>
-                </div>
-
-              {/* Careers Section */}
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="mr-2">💼</span>
-                  {lang === 'en' ? 'Suitable Careers' : 'Uygun Kariyerler'}
-                </h3>
-                <div className="space-y-2">
-                  {DISC_DESCRIPTIONS[discResults.dominant].careers.map((career, index) => (
-                    <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                      <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: DISC_DESCRIPTIONS[discResults.dominant].color }}></div>
-                      <span className="font-medium text-gray-700">{career}</span>
-              </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tools Section */}
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                  <span className="mr-2">🛠️</span>
-                  {lang === 'en' ? 'Recommended Tools' : 'Önerilen Araçlar'}
-                </h3>
-                <div className="space-y-2">
-                  {DISC_DESCRIPTIONS[discResults.dominant].tools.map((tool, index) => (
-                    <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                      <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: DISC_DESCRIPTIONS[discResults.dominant].color }}></div>
-                      <span className="font-medium text-gray-700">{tool}</span>
-              </div>
-                  ))}
-        </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 w-full">
+                    {(['D','I','S','C'] as const).map((type) => (
+                      <Tooltip key={type}>
+                        <TooltipTrigger asChild>
+                          <div className="flex flex-col items-center cursor-pointer w-full">
+                            <div
+                              className="w-12 h-12 rounded-xl flex items-center justify-center shadow border-2 text-white text-lg font-bold transition-all duration-200"
+                              style={{ background: discData.color, borderColor: discData.color }}
+                            >
+                              <span className="text-xl font-bold">{discResult.scores[type]}</span>
         </div>
       </div>
-
-            {/* Personality Insights */}
-            <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🔍</span>
-                {lang === 'en' ? 'Personality Analysis' : 'Kişilik Analizi'}
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-          <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    {lang === 'en' ? 'Strengths:' : 'Güçlü Yönler:'}
-                  </h4>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• {discResults.dominant === 'D' ? 
-                           (lang === 'en' ? 'Leadership and determination' : 'Liderlik ve kararlılık') : 
-                           discResults.dominant === 'I' ? 
-                           (lang === 'en' ? 'Communication and motivation' : 'İletişim ve motivasyon') :
-                           discResults.dominant === 'S' ? 
-                           (lang === 'en' ? 'Reliability and support' : 'Güvenilirlik ve destek') : 
-                           (lang === 'en' ? 'Analytical thinking and planning' : 'Analitik düşünce ve planlama')}</li>
-                    <li>• {discResults.dominant === 'D' ? 
-                           (lang === 'en' ? 'Quick decision making' : 'Hızlı karar verme') :
-                           discResults.dominant === 'I' ? 
-                           (lang === 'en' ? 'Creative problem solving' : 'Yaratıcı problem çözme') :
-                           discResults.dominant === 'S' ? 
-                           (lang === 'en' ? 'Team harmony' : 'Takım uyumu sağlama') : 
-                           (lang === 'en' ? 'Attention to detail' : 'Detaylara odaklanma')}</li>
-                  </ul>
-          </div>
-                      <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    {lang === 'en' ? 'Areas for Development:' : 'Gelişim Alanları:'}
-                  </h4>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• {discResults.dominant === 'D' ? 
-                           (lang === 'en' ? 'Patience and empathy' : 'Sabır ve empati') :
-                           discResults.dominant === 'I' ? 
-                           (lang === 'en' ? 'Attention to detail' : 'Detaylara dikkat') :
-                           discResults.dominant === 'S' ? 
-                           (lang === 'en' ? 'Quick change adaptation' : 'Hızlı değişim adaptasyonu') : 
-                           (lang === 'en' ? 'Flexibility and spontaneity' : 'Esneklik ve spontanlık')}</li>
-                    <li>• {discResults.dominant === 'D' ? 
-                           (lang === 'en' ? 'Team collaboration' : 'Takım çalışması') :
-                           discResults.dominant === 'I' ? 
-                           (lang === 'en' ? 'Planning and organization' : 'Planlama ve organizasyon') :
-                           discResults.dominant === 'S' ? 
-                           (lang === 'en' ? 'Leadership positions' : 'Liderlik pozisyonları') : 
-                           (lang === 'en' ? 'Social interaction' : 'Sosyal etkileşim')}</li>
-                  </ul>
-                        </div>
-                      </div>
-                    </div>
-        </Card>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-              onClick={() => setAppState('expertise')} 
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
-            >
-              {lang === 'en' ? '🚀 Proceed to Expertise Analysis' : '🚀 Uzmanlık Analizine Geç'}
-                </Button>
-                <Button
-              variant="outline" 
-              onClick={() => setAppState('assessment')}
-              className="border-2 border-gray-300 hover:bg-gray-50 px-8 py-3 text-lg font-semibold"
-            >
-              {lang === 'en' ? '🔄 Retake Assessment' : '🔄 Envanteri Tekrar Yap'}
-                </Button>
-                <Button
-              variant="outline" 
-              onClick={() => setAppState('dashboard')}
-              className="border-2 border-gray-300 hover:bg-gray-50 px-8 py-3 text-lg font-semibold"
-            >
-              {lang === 'en' ? '🏠 Back to Home' : '🏠 Ana Sayfaya Dön'}
-                </Button>
-            </div>
-              </div>
-            )}
-
-      {/* Uzmanlık sonuçları ekranı */}
-      {appState === 'expertise-results' && expertiseResults && (
-        <div className="max-w-4xl mx-auto p-6 space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-800 mb-2">
-              {lang === 'en' ? '🚀 Your Expertise Profile' : '🚀 Uzmanlık Profiliniz'}
-            </h1>
-            <p className="text-gray-600 text-lg">
-              {lang === 'en' ? 'Your expertise analysis results are below' : 'Uzmanlık analizinizin sonuçları aşağıdadır'}
-            </p>
-              </div>
-
-          {/* Ana Profil Kartı */}
-          <Card className="p-8 bg-white/95 backdrop-blur-sm shadow-xl border-0">
-            <div className="text-center mb-8">
-              {/* Dominant Expertise Badge */}
-              <div className="inline-flex items-center px-8 py-4 rounded-full text-white font-bold text-2xl mb-6 shadow-lg" 
-                   style={{ backgroundColor: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].color }}>
-                <span className="mr-3 text-3xl">
-                  {expertiseResults.dominant === 'Marketing' ? '📊' : 
-                   expertiseResults.dominant === 'Sales' ? '💼' : 
-                   expertiseResults.dominant === 'Brand' ? '🎨' : '⚙️'}
-                </span>
-                {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].title}
-                  </div>
-              
-              {/* Description */}
-              <p className="text-gray-700 text-xl leading-relaxed max-w-3xl mx-auto mb-8">
-                {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].description}
-              </p>
-            </div>
-
-            {/* Scores Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              {(['Marketing', 'Sales', 'Brand', 'Product'] as const).map((type) => (
-                <div key={type} className={`p-4 rounded-lg text-center ${
-                  type === expertiseResults.dominant 
-                    ? 'ring-2 ring-offset-2' 
-                    : 'bg-gray-50'
-                }`} style={{
-                  backgroundColor: type === expertiseResults.dominant 
-                    ? `${(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[type].color}20` 
-                    : undefined,
-                  borderColor: type === expertiseResults.dominant 
-                    ? (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[type].color 
-                    : undefined
-                }}>
-                  <div className="text-2xl font-bold mb-2" style={{ color: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[type].color }}>
-                    {expertiseResults.scores[type]}
-              </div>
-                  <div className="text-sm font-medium text-gray-600">
-                    {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[type].title.split(' ')[0]}
-            </div>
-          </div>
-                ))}
-              </div>
-
-            {/* Detailed Sections */}
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Traits & Careers Section */}
-              <div className="space-y-6">
-                {/* Traits Section */}
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="mr-2">💪</span>
-                    {lang === 'en' ? 'Key Strengths' : 'Güçlü Özellikler'}
-                  </h3>
-                  <div className="space-y-2">
-                    {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].traits.map((trait, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].color }}></div>
-                        <span className="font-medium text-gray-700">{trait}</span>
-        </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-center max-w-xs">
+                          <div className="font-bold mb-1" style={{ color: DISC_DESCRIPTIONS_LANG[type].color }}>{DISC_DESCRIPTIONS_LANG[type].title}</div>
+                          <div className="text-xs text-gray-700">{DISC_DESCRIPTIONS_LANG[type].description}</div>
+                        </TooltipContent>
+                      </Tooltip>
                     ))}
-      </div>
         </div>
-
-                {/* Careers Section */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="mr-2">💼</span>
-                    {lang === 'en' ? 'Suitable Careers' : 'Uygun Kariyerler'}
-                  </h3>
-                  <div className="space-y-2">
-                    {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].careers.map((career, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].color }}></div>
-                        <span className="font-medium text-gray-700">{career}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                    <div className="bg-blue-50 rounded-xl p-3">
+                      <div className="font-semibold mb-1 text-sm">{t.strengths}</div>
+                      <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                        {discData.traits.map((trait, i) => <li key={i}>{trait}</li>)}
+                      </ul>
               </div>
-                    ))}
+                    <div className="bg-green-50 rounded-xl p-3">
+                      <div className="font-semibold mb-1 text-sm">{t.careers}</div>
+                      <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                        {discData.careers.map((career, i) => <li key={i}>{career}</li>)}
+                      </ul>
             </div>
+                    <div className="bg-purple-50 rounded-xl p-3">
+                      <div className="font-semibold mb-1 text-sm">{t.tools}</div>
+                      <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                        {discData.tools.map((tool, i) => <li key={i}>{tool}</li>)}
+                      </ul>
         </div>
       </div>
-
-              {/* Tools & Responsibilities Section */}
-              <div className="space-y-6">
-                {/* Tools Section */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="mr-2">🛠️</span>
-                    {lang === 'en' ? 'Recommended Tools' : 'Önerilen Araçlar'}
-                  </h3>
-                  <div className="space-y-2">
-                    {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].tools.map((tool, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].color }}></div>
-                        <span className="font-medium text-gray-700">{tool}</span>
-        </div>
-                    ))}
-            </div>
-      </div>
-
-                {/* Responsibilities Section */}
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <span className="mr-2">📋</span>
-                    {lang === 'en' ? 'Key Responsibilities' : 'Temel Sorumluluklar'}
-                  </h3>
-                  <div className="space-y-2">
-                    {(lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].responsibilities.map((responsibility, index) => (
-                      <div key={index} className="flex items-center p-3 bg-white rounded-lg shadow-sm">
-                        <div className="w-2 h-2 rounded-full mr-3" style={{ backgroundColor: (lang === 'en' ? EXPERTISE_DESCRIPTIONS_EN : EXPERTISE_DESCRIPTIONS)[expertiseResults.dominant].color }}></div>
-                        <span className="font-medium text-gray-700">{responsibility}</span>
-                  </div>
-                    ))}
-                  </div>
-                  </div>
-                </div>
-        </div>
-
-            {/* Career Insights */}
-            <div className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl">
-              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🔍</span>
-                {lang === 'en' ? 'Career Analysis' : 'Kariyer Analizi'}
-              </h3>
-              <div className="grid md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    {lang === 'en' ? 'Strengths:' : 'Güçlü Yönler:'}
-                  </h4>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• {expertiseResults.dominant === 'Marketing' ? 
-                           (lang === 'en' ? 'Data-driven decision making and strategic thinking' : 'Veri odaklı karar verme ve stratejik düşünme') : 
-                           expertiseResults.dominant === 'Sales' ? 
-                           (lang === 'en' ? 'Customer relationships and persuasion skills' : 'Müşteri ilişkileri ve ikna kabiliyeti') :
-                           expertiseResults.dominant === 'Brand' ? 
-                           (lang === 'en' ? 'Creativity and visual perception' : 'Yaratıcılık ve görsel algı') : 
-                           (lang === 'en' ? 'Analytical thinking and process management' : 'Analitik düşünce ve süreç yönetimi')}</li>
-                    <li>• {expertiseResults.dominant === 'Marketing' ? 
-                           (lang === 'en' ? 'Campaign optimization and ROI analysis' : 'Kampanya optimizasyonu ve ROI analizi') :
-                           expertiseResults.dominant === 'Sales' ? 
-                           (lang === 'en' ? 'Goal-oriented sales strategies' : 'Hedef odaklı satış stratejileri') :
-                           expertiseResults.dominant === 'Brand' ? 
-                           (lang === 'en' ? 'Brand consistency and perception management' : 'Marka tutarlılığı ve algı yönetimi') : 
-                           (lang === 'en' ? 'User experience and product development' : 'Kullanıcı deneyimi ve ürün geliştirme')}</li>
-                  </ul>
-          </div>
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">
-                    {lang === 'en' ? 'Areas for Development:' : 'Gelişim Alanları:'}
-                  </h4>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• {expertiseResults.dominant === 'Marketing' ? 
-                           (lang === 'en' ? 'Technical details and process management' : 'Teknik detaylar ve süreç yönetimi') :
-                           expertiseResults.dominant === 'Sales' ? 
-                           (lang === 'en' ? 'Creative content production' : 'Yaratıcı içerik üretimi') :
-                           expertiseResults.dominant === 'Brand' ? 
-                           (lang === 'en' ? 'Data analysis and measurement' : 'Veri analizi ve ölçümleme') : 
-                           (lang === 'en' ? 'Creative design and brand management' : 'Yaratıcı tasarım ve marka yönetimi')}</li>
-                    <li>• {expertiseResults.dominant === 'Marketing' ? 
-                           (lang === 'en' ? 'Direct customer relationships' : 'Birebir müşteri ilişkileri') :
-                           expertiseResults.dominant === 'Sales' ? 
-                           (lang === 'en' ? 'Strategic planning and analysis' : 'Stratejik planlama ve analiz') :
-                           expertiseResults.dominant === 'Brand' ? 
-                           (lang === 'en' ? 'Technical processes and data management' : 'Teknik süreçler ve veri yönetimi') : 
-                           (lang === 'en' ? 'Sales and marketing strategies' : 'Satış ve pazarlama stratejileri')}</li>
-                  </ul>
-                </div>
-              </div>
-        </div>
-          </Card>
-
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button
-              onClick={() => setAppState('assessment')} 
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
-            >
-              {lang === 'en' ? '🔄 Take Personality Assessment' : '🔄 Kişilik Envanterini Yap'}
-            </Button>
-            <Button
-              variant="outline" 
-              onClick={() => setAppState('expertise')}
-              className="border-2 border-gray-300 hover:bg-gray-50 px-8 py-3 text-lg font-semibold"
-            >
-              {lang === 'en' ? '🔄 Retake Expertise Analysis' : '🔄 Uzmanlık Analizini Tekrar Yap'}
-            </Button>
-            <Button
-              onClick={() => setAppState('simulation')}
-              className="bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white px-8 py-3 text-lg font-semibold shadow-lg"
-            >
-              {lang === 'en' ? '🎮 Start Role Simulation' : '🎮 Rol Simülasyonunu Başlat'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setAppState('dashboard')}
-              className="border-2 border-gray-300 hover:bg-gray-50 px-8 py-3 text-lg font-semibold"
-            >
-              {lang === 'en' ? '🏠 Back to Home' : '🏠 Ana Sayfaya Dön'}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Simülasyon ekranı */}
-      {appState === 'simulation' && (
-        <SimulationIntro 
-          onStart={handleSimulationStart} 
-          language={lang} 
-        />
-      )}
-
-      {/* Fiyatlandırma Stratejisi Görevi */}
-      {appState === 'simulation-pricing' && (
-        <PricingStrategyTask 
-          onComplete={handlePricingComplete} 
-          language={lang} 
-        />
-      )}
-
-      {/* One-pager Görevi */}
-      {appState === 'simulation-onepager' && (
-        <OnepagerTask 
-          onComplete={handleOnepagerComplete} 
-          pricingResult={pricingResult}
-          language={lang} 
-        />
-      )}
-
-      {/* Simülasyon Tamamlandı */}
-      {appState === 'simulation-complete' && (
-        <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-4">
-          <div className="max-w-2xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                <Play className="w-4 h-4 mr-2" />
-                {lang === 'en' ? 'Simulation Completed' : 'Simülasyon Tamamlandı'}
-              </Badge>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {lang === 'en' ? '🎉 Congratulations!' : '🎉 Tebrikler!'}
-              </h1>
-              <p className="text-lg text-gray-600">
-                {lang === 'en' 
-                  ? 'You have successfully completed the Pricing Specialist simulation.' 
-                  : 'Pricing Specialist simülasyonunu başarıyla tamamladınız.'}
-              </p>
-            </div>
-
-            <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900">
-                    {lang === 'en' ? 'What you accomplished:' : 'Başardıklarınız:'}
-                  </h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">
-                        {lang === 'en' ? 'Pricing strategy analysis and recommendation' : 'Fiyatlandırma stratejisi analizi ve önerisi'}
-                      </span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">
-                        {lang === 'en' ? 'Executive summary preparation' : 'Yönetici özeti hazırlama'}
-                      </span>
-                    </li>
-                    <li className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">
-                        {lang === 'en' ? 'Professional presentation skills' : 'Profesyonel sunum becerileri'}
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="text-center">
-              <Button
-                onClick={handleSimulationComplete}
-                className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                size="lg"
-              >
-                {lang === 'en' ? '🏠 Back to Dashboard' : '🏠 Ana Sayfaya Dön'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Dashboard ekranı */}
-      {appState === 'dashboard' && (
-        <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-4">
-          <div className="max-w-6xl mx-auto space-y-8">
-            {/* Welcome Header */}
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm shadow-lg border border-gray-100">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                <span className="text-sm font-medium text-gray-700">
-                  {lang === 'en' ? 'Welcome back!' : 'Tekrar hoş geldiniz!'}
-                </span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
-                {lang === 'en' ? 'Your Career Journey' : 'Kariyer Yolculuğunuz'}
-              </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                {lang === 'en' 
-                  ? 'Discover your potential and unlock new opportunities with AI-powered insights.' 
-                  : 'Yapay zeka destekli içgörülerle potansiyelinizi keşfedin ve yeni fırsatlar yakalayın.'}
-              </p>
-            </div>
-
-            {/* Progress Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <User className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <Badge variant="secondary" className="bg-blue-50 text-blue-700">
-                      {lang === 'en' ? 'Completed' : 'Tamamlandı'}
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {lang === 'en' ? 'Personality Assessment' : 'Kişilik Envanteri'}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {lang === 'en' ? 'DISC profile analysis completed' : 'DISC profil analizi tamamlandı'}
-                  </p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '100%' }}></div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                      <Target className="w-6 h-6 text-green-600" />
-                    </div>
-                    <Badge variant="secondary" className="bg-green-50 text-green-700">
-                      {lang === 'en' ? 'Completed' : 'Tamamlandı'}
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {lang === 'en' ? 'Expertise Analysis' : 'Uzmanlık Analizi'}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {lang === 'en' ? 'Career specialization identified' : 'Kariyer uzmanlığı belirlendi'}
-                  </p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-green-600 h-2 rounded-full" style={{ width: '100%' }}></div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <Play className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <Badge variant="secondary" className="bg-purple-50 text-purple-700">
-                      {lang === 'en' ? 'Available' : 'Mevcut'}
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {lang === 'en' ? 'Role Simulation' : 'Rol Simülasyonu'}
-                  </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {lang === 'en' ? 'Practice real-world scenarios' : 'Gerçek dünya senaryolarını deneyin'}
-                  </p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-purple-600 h-2 rounded-full" style={{ width: '0%' }}></div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Main Actions Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Personality Assessment */}
-              <Card className="group bg-gradient-to-br from-blue-50 to-indigo-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105" onClick={() => setAppState('assessment')}>
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-blue-200 transition-colors">
-                      <User className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Personality Assessment' : 'Kişilik Envanteri'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Discover your DISC personality type and career preferences' : 'DISC kişilik tipinizi ve kariyer tercihlerinizi keşfedin'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50">
-                      {lang === 'en' ? '🔄 Retake' : '🔄 Tekrar Yap'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Expertise Analysis */}
-              <Card className="group bg-gradient-to-br from-green-50 to-emerald-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105" onClick={() => setAppState('expertise')}>
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-green-200 transition-colors">
-                      <Target className="w-8 h-8 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Expertise Analysis' : 'Uzmanlık Analizi'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Identify your professional strengths and career path' : 'Profesyonel güçlü yanlarınızı ve kariyer yolunuzu belirleyin'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-green-200 text-green-700 hover:bg-green-50">
-                      {lang === 'en' ? '🚀 Start Analysis' : '🚀 Analizi Başlat'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Role Simulation */}
-              <Card className="group bg-gradient-to-br from-purple-50 to-violet-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105" onClick={() => setAppState('simulation')}>
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-purple-200 transition-colors">
-                      <Play className="w-8 h-8 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Role Simulation' : 'Rol Simülasyonu'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Practice real-world scenarios and build skills' : 'Gerçek dünya senaryolarını deneyin ve becerilerinizi geliştirin'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-purple-200 text-purple-700 hover:bg-purple-50">
-                      {lang === 'en' ? '🎮 Start Simulation' : '🎮 Simülasyonu Başlat'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Job Search */}
-              <Card className="group bg-gradient-to-br from-orange-50 to-red-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105">
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-orange-200 transition-colors">
-                      <Briefcase className="w-8 h-8 text-orange-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Job Search' : 'İş Arama'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Find opportunities that match your profile' : 'Profilinize uygun fırsatları bulun'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-orange-200 text-orange-700 hover:bg-orange-50">
-                      {lang === 'en' ? '🔍 Browse Jobs' : '🔍 İşleri Keşfet'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Networking */}
-              <Card className="group bg-gradient-to-br from-teal-50 to-cyan-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105">
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-teal-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-teal-200 transition-colors">
-                      <Users className="w-8 h-8 text-teal-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Networking' : 'Ağ Kurma'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Connect with professionals in your field' : 'Alanınızdaki profesyonellerle bağlantı kurun'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-teal-200 text-teal-700 hover:bg-teal-50">
-                      {lang === 'en' ? '🤝 Connect' : '🤝 Bağlan'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Career Coaching */}
-              <Card className="group bg-gradient-to-br from-pink-50 to-rose-50 border-0 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105">
-                <CardContent className="p-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center mx-auto group-hover:bg-pink-200 transition-colors">
-                      <TrendingUp className="w-8 h-8 text-pink-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {lang === 'en' ? 'Career Coaching' : 'Kariyer Koçluğu'}
-                      </h3>
-                      <p className="text-gray-600 text-sm">
-                        {lang === 'en' ? 'Get personalized guidance from experts' : 'Uzmanlardan kişiselleştirilmiş rehberlik alın'}
-                      </p>
-                    </div>
-                    <Button variant="outline" className="w-full border-pink-200 text-pink-700 hover:bg-pink-50">
-                      {lang === 'en' ? '💡 Get Advice' : '💡 Tavsiye Al'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="bg-white/60 backdrop-blur-sm border-0 shadow-md">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-gray-900">3</div>
-                  <div className="text-sm text-gray-600">
-                    {lang === 'en' ? 'Assessments' : 'Değerlendirme'}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/60 backdrop-blur-sm border-0 shadow-md">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-gray-900">12</div>
-                  <div className="text-sm text-gray-600">
-                    {lang === 'en' ? 'Skills Identified' : 'Belirlenen Beceri'}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/60 backdrop-blur-sm border-0 shadow-md">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-gray-900">5</div>
-                  <div className="text-sm text-gray-600">
-                    {lang === 'en' ? 'Career Paths' : 'Kariyer Yolu'}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/60 backdrop-blur-sm border-0 shadow-md">
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-gray-900">85%</div>
-                  <div className="text-sm text-gray-600">
-                    {lang === 'en' ? 'Profile Complete' : 'Profil Tamamlandı'}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      )}
+                  <div className="bg-yellow-50 rounded-xl p-3 mb-4">
+                    <div className="font-semibold mb-1 text-sm">{t.analysis}</div>
+                    <div className="text-gray-700 text-xs">
+                      <b>{t.strengthsLabel}</b> {discData.traits.slice(0,2).join(', ')}<br/>
+                      <b>{t.devAreas}</b> {t.devAreasText}
     </div>
+        </div>
+                  <div className="flex flex-col md:flex-row items-center justify-center gap-3 mt-2 w-full">
+                    <div className="flex flex-col sm:flex-row gap-2 w-full">
+                      <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-3 py-2 text-sm font-semibold shadow-lg flex-1 min-w-0" onClick={() => setAppState('expertise')}>
+                        {t.continue}
+              </Button>
+                      <Button variant="outline" className="px-3 py-2 text-sm font-semibold flex-1 min-w-0" onClick={() => setAppState('dashboard')}>
+                        {t.home}
+                    </Button>
+                      <AIReportModal discResults={discResult} language={language} buttonClassName="flex-1 min-w-0 px-3 py-2 text-sm font-semibold" buttonText={t.aiReport} />
+                  </div>
+                </div>
+        </div>
+      </div>
+              </TooltipProvider>
+            );
+          }
+          // Modül akışı
+          switch (appState) {
+            case 'dashboard':
+              return <CareerDashboard key={dashboardKey} onModuleSelect={handleModuleSelect} />;
+            case 'assessment':
+              return <PersonalityQuestion key={language} questions={discQuestions} onComplete={(_answers, discProfile) => { setDiscResult(discProfile); setAppState('assessment-result'); }} />;
+            case 'expertise':
+              return <ExpertiseQuestion key={language} questions={expertiseQuestions} onComplete={(_answers, expertiseProfile) => { setExpertiseResult(expertiseProfile); setAppState('expertise-results'); }} />;
+            case 'expertise-results':
+              if (!expertiseResult) return null;
+              const expType = expertiseResult.dominant as keyof typeof EXPERTISE_REPORT[typeof language];
+              const expData = EXPERTISE_REPORT[language][expType];
+    return (
+                <div className="min-h-screen bg-gradient-to-br from-[#eaf6f2] to-[#d1f2e6] flex flex-col items-center py-6 px-2">
+                  <div className="w-full max-w-xl bg-white/90 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">{expData.title}</h2>
+                    <div className="text-center text-gray-500 mb-4">{expData.desc}</div>
+                    <div className="flex flex-col items-center mb-4">
+                      <span className="inline-block px-6 py-2 rounded-full text-lg font-bold mb-2" style={{ background: expData.color + '22', color: expData.color }}>{expData.title}</span>
+          </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+                      <div className="bg-blue-50 rounded-xl p-3">
+                        <div className="font-semibold mb-1 text-sm">{language === 'tr' ? '💪 Güçlü Özellikler' : '💪 Strengths'}</div>
+                        <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                          {expData.traits.map((trait, i) => <li key={i}>{trait}</li>)}
+                        </ul>
+              </div>
+                      <div className="bg-green-50 rounded-xl p-3">
+                        <div className="font-semibold mb-1 text-sm">{language === 'tr' ? '🎯 Uygun Pozisyonlar' : '🎯 Suitable Careers'}</div>
+                        <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                          {expData.careers.map((career, i) => <li key={i}>{career}</li>)}
+                        </ul>
+                </div>
+                      <div className="bg-purple-50 rounded-xl p-3">
+                        <div className="font-semibold mb-1 text-sm">{language === 'tr' ? '🛠️ Önerilen Araçlar' : '🛠️ Recommended Tools'}</div>
+                        <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
+                          {expData.tools.map((tool, i) => <li key={i}>{tool}</li>)}
+                        </ul>
+              </div>
+        </div>
+                    <div className="bg-yellow-50 rounded-xl p-3 mb-4">
+                      <div className="font-semibold mb-1 text-sm">{language === 'tr' ? '🔎 Rol Analizi' : '🔎 Role Analysis'}</div>
+                      <div className="text-gray-700 text-xs">{expData.analysis}</div>
+      </div>
+                    <div className="mb-4">
+                      <div className="font-semibold mb-2 text-sm text-center">{language === 'tr' ? 'Bu pozisyon(lar) için simülasyonları deneyimle:' : 'Try simulations for these roles:'}</div>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {expData.careers.map((career, i) => (
+                          <Button key={i} className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-3 py-2 text-xs font-semibold shadow flex-1 min-w-0" onClick={() => setAppState('simulation')}>
+                            {career}
+              </Button>
+                        ))}
+          </div>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-3 mt-2 w-full">
+                      <Button variant="outline" className="px-3 py-2 text-sm font-semibold flex-1 min-w-0" onClick={() => setAppState('dashboard')}>
+                        {language === 'tr' ? '🏠 Ana Sayfa' : '🏠 Home'}
+                    </Button>
+                  </div>
+                </div>
+          </div>
+              );
+            case 'simulation':
+              return <SimulationIntro onStart={() => setAppState('simulation-pricing')} language={language} />;
+            case 'simulation-pricing':
+              return <PricingStrategyTask onComplete={() => setAppState('simulation-onepager')} language={language} />;
+            case 'simulation-onepager':
+              return <OnepagerTask onComplete={() => setAppState('simulation-presentation')} language={language} />;
+            case 'simulation-presentation':
+              return <PresentationTask onComplete={() => setAppState('simulation-complete')} language={language} />;
+            case 'simulation-complete':
+              return <AISimulationReport
+                user={{ name: user?.displayName || user?.email || 'User', avatarUrl: user?.photoURL || undefined }}
+                discResults={discResult}
+                expertiseResults={expertiseResult}
+                assessmentResults={null}
+                simulationResults={null}
+                language={language}
+              />;
+            default:
+              return <CareerDashboard onModuleSelect={handleModuleSelect} />;
+          }
+        })()}
+                </div>
+    </>
   );
 }
 

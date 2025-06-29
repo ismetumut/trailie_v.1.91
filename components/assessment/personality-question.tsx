@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Question {
   id: number;
@@ -58,13 +59,31 @@ const DISC_DESCRIPTIONS = {
   }
 };
 
-export function PersonalityQuestion({ 
+export function PersonalityQuestion({
   questions, 
   onComplete
 }: PersonalityQuestionProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const { language } = useLanguage();
+  const TEXT = {
+    tr: {
+      question: 'Soru',
+      previous: 'Önceki',
+      next: 'Sonraki',
+      seeResults: 'Sonuçları Gör',
+      progress: '%',
+    },
+    en: {
+      question: 'Question',
+      previous: 'Previous',
+      next: 'Next',
+      seeResults: 'See Results',
+      progress: '%',
+    }
+  };
+  const t = TEXT[language];
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
@@ -125,8 +144,8 @@ export function PersonalityQuestion({
           
           <div className="flex-1 mx-4">
             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Soru {currentQuestion + 1} / {questions.length}</span>
-              <span>%{Math.round(progress)}</span>
+              <span>{t.question} {currentQuestion + 1} / {questions.length}</span>
+              <span>{t.progress}{Math.round(progress)}</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -143,12 +162,12 @@ export function PersonalityQuestion({
             <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 leading-relaxed">
               {currentQ.text}
             </h2>
-            
+
             {/* Options */}
-            <div className="space-y-3">
+          <div className="space-y-3">
               {currentQ.options.map((option, index) => (
                 <button
-                  key={index}
+                key={index}
                   onClick={() => handleOptionSelect(index)}
                   className={`w-full p-4 text-left rounded-xl border-2 transition-all duration-200 ${
                     selectedOption === index
@@ -169,7 +188,7 @@ export function PersonalityQuestion({
                     <span className="text-gray-700 font-medium">{option.text}</span>
                   </div>
                 </button>
-              ))}
+            ))}
             </div>
           </div>
 
@@ -182,8 +201,8 @@ export function PersonalityQuestion({
               className="flex items-center gap-2"
             >
               <ChevronLeft className="w-4 h-4" />
-              Önceki
-            </Button>
+              {t.previous}
+                </Button>
             
             <div className="text-sm text-gray-500">
               {currentQuestion + 1} / {questions.length}
@@ -194,11 +213,11 @@ export function PersonalityQuestion({
               disabled={selectedOption === null}
               className="flex items-center gap-2 bg-[#10b981] hover:bg-[#059669]"
             >
-              {currentQuestion === questions.length - 1 ? 'Sonuçları Gör' : 'Sonraki'}
+              {currentQuestion === questions.length - 1 ? t.seeResults : t.next}
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
-        </Card>
+      </Card>
       </div>
     </div>
   );

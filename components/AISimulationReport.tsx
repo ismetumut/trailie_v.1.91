@@ -1,0 +1,202 @@
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from "recharts";
+
+interface AISimulationReportProps {
+  user?: { name?: string; avatarUrl?: string };
+  discResults?: any;
+  expertiseResults?: any;
+  assessmentResults?: any;
+  simulationResults?: any;
+  language?: "tr" | "en";
+}
+
+const content = {
+  tr: {
+    title: "AI Gelişim Raporu",
+    summary: "Simülasyon ve değerlendirme sonuçlarına göre kişisel gelişim raporunuz hazır!",
+    strengths: "Güçlü Yönler",
+    devAreas: "Gelişime Açık Alanlar",
+    overallScore: "Genel Skor",
+    radarTitle: "Yetkinlik Profili (AI Analizi)",
+    aiAnalysis: "AI Analiz Yorumu",
+    recommendations: "Eğitim Önerileri",
+    userLabel: "Kullanıcı",
+    scoreLabel: "Başarı Skoru",
+    skills: ["İletişim", "Problem Çözme", "Teknik Yetenek", "Takım Çalışması", "Analitik Düşünme", "Liderlik"],
+    noData: "Veri bulunamadı."
+  },
+  en: {
+    title: "AI Development Report",
+    summary: "Your personal development report is ready based on simulation and assessment results!",
+    strengths: "Strengths",
+    devAreas: "Areas for Development",
+    overallScore: "Overall Score",
+    radarTitle: "Competency Profile (AI Analysis)",
+    aiAnalysis: "AI Analysis Comment",
+    recommendations: "Learning Recommendations",
+    userLabel: "User",
+    scoreLabel: "Performance Score",
+    skills: ["Communication", "Problem Solving", "Technical Skills", "Teamwork", "Analytical Thinking", "Leadership"],
+    noData: "No data available."
+  }
+};
+
+// Dummy AI analysis and recommendations (replace with real AI output later)
+function getAIAnalysis(language: "tr" | "en") {
+  return language === "tr"
+    ? "İkna kabiliyetiniz ve iletişim becerileriniz yüksek. Veri analizi ve teknik yetkinliklerde gelişim gösterebilirsiniz. Takım çalışmasında uyumlusunuz, liderlik potansiyeliniz var."
+    : "Your persuasion and communication skills are strong. You can improve in data analysis and technical competencies. You are a good team player and have leadership potential.";
+}
+
+function getStrengths(language: "tr" | "en") {
+  return language === "tr"
+    ? ["İletişim", "İkna Kabiliyeti", "Takım Çalışması"]
+    : ["Communication", "Persuasion", "Teamwork"];
+}
+
+function getDevAreas(language: "tr" | "en") {
+  return language === "tr"
+    ? ["Veri Analizi", "Teknik Yetenek"]
+    : ["Data Analysis", "Technical Skills"];
+}
+
+function getRecommendations(language: "tr" | "en") {
+  return language === "tr"
+    ? [
+        {
+          area: "Veri Analizi",
+          links: [
+            { label: "Coursera: Excel Skills for Business", url: "https://www.coursera.org/learn/excel" },
+            { label: "LinkedIn Learning: SQL for Data Analysts", url: "https://linkedin.com/learning/sql-101" }
+          ]
+        },
+        {
+          area: "Teknik Yetenek",
+          links: [
+            { label: "Udemy: Modern JavaScript", url: "https://www.udemy.com/course/the-complete-javascript-course/" },
+            { label: "Coursera: Python for Everybody", url: "https://www.coursera.org/specializations/python" }
+          ]
+        }
+      ]
+    : [
+        {
+          area: "Data Analysis",
+          links: [
+            { label: "Coursera: Excel Skills for Business", url: "https://www.coursera.org/learn/excel" },
+            { label: "LinkedIn Learning: SQL for Data Analysts", url: "https://linkedin.com/learning/sql-101" }
+          ]
+        },
+        {
+          area: "Technical Skills",
+          links: [
+            { label: "Udemy: Modern JavaScript", url: "https://www.udemy.com/course/the-complete-javascript-course/" },
+            { label: "Coursera: Python for Everybody", url: "https://www.coursera.org/specializations/python" }
+          ]
+        }
+      ];
+}
+
+// Dummy radar data (replace with real AI output later)
+function getRadarData(language: "tr" | "en") {
+  const skills = content[language].skills;
+  return skills.map((skill) => ({
+    skill,
+    value: Math.floor(Math.random() * 40) + 60 // 60-100 arası dummy skor
+  }));
+}
+
+export default function AISimulationReport({ user, discResults, expertiseResults, assessmentResults, simulationResults, language = "tr" }: AISimulationReportProps) {
+  const t = content[language];
+  const radarData = getRadarData(language);
+  const strengths = getStrengths(language);
+  const devAreas = getDevAreas(language);
+  const recommendations = getRecommendations(language);
+  const aiAnalysis = getAIAnalysis(language);
+  const overallScore = Math.round(radarData.reduce((a, b) => a + b.value, 0) / radarData.length);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 p-4 flex flex-col items-center">
+      <Card className="w-full max-w-2xl mb-6 shadow-xl">
+        <CardHeader className="flex flex-col items-center gap-2">
+          <Avatar className="w-16 h-16">
+            <AvatarImage src={user?.avatarUrl} alt={user?.name} />
+            <AvatarFallback>{user?.name ? user.name[0] : "U"}</AvatarFallback>
+          </Avatar>
+          <div className="text-lg font-semibold text-gray-700">{t.userLabel}: {user?.name || "-"}</div>
+          <CardTitle className="text-2xl font-bold text-center">{t.title}</CardTitle>
+          <div className="text-center text-gray-500">{t.summary}</div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-6">
+          {/* Genel Skor */}
+          <div className="flex flex-col items-center">
+            <div className="font-semibold mb-1">{t.overallScore}</div>
+            <Progress value={overallScore} className="w-full max-w-xs h-4" />
+            <div className="text-sm text-gray-600 mt-1">{t.scoreLabel}: {overallScore}/100</div>
+          </div>
+          {/* Güçlü Yönler & Gelişim Alanları */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div className="font-semibold mb-1">{t.strengths}</div>
+              <ul className="list-disc list-inside text-green-700 text-sm space-y-1">
+                {strengths.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            </div>
+            <div>
+              <div className="font-semibold mb-1">{t.devAreas}</div>
+              <ul className="list-disc list-inside text-red-700 text-sm space-y-1">
+                {devAreas.map((s, i) => <li key={i}>{s}</li>)}
+              </ul>
+            </div>
+          </div>
+          {/* Radar Grafik */}
+          <div>
+            <div className="font-semibold mb-2">{t.radarTitle}</div>
+            <div className="w-full h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
+                  <PolarGrid />
+                  <PolarAngleAxis dataKey="skill" />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                  <Radar name="AI" dataKey="value" stroke="#6366f1" fill="#6366f1" fillOpacity={0.4} />
+                  <Tooltip />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          {/* AI Metinsel Analiz */}
+          <div>
+            <div className="font-semibold mb-1">{t.aiAnalysis}</div>
+            <div className="bg-white/80 rounded-lg p-3 text-gray-700 text-base shadow-inner">
+              {aiAnalysis}
+            </div>
+          </div>
+          {/* Eğitim Önerileri */}
+          <div>
+            <div className="font-semibold mb-1">{t.recommendations}</div>
+            <div className="space-y-3">
+              {recommendations.map((rec, i) => (
+                <div key={i}>
+                  <div className="font-semibold text-indigo-700 mb-1">🎯 {rec.area}</div>
+                  <ul className="list-disc list-inside ml-4">
+                    {rec.links.map((link, j) => (
+                      <li key={j}>
+                        <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+} 

@@ -60,7 +60,7 @@ export default function OnepagerTask({ onComplete, pricingResult, language = "tr
       result: {
         title: "One-pager Tamamlandı",
         message: "Bulgularınız başarıyla özetlendi ve üst yönetime hazırlandı.",
-        nextTask: "Son görev: Global ekibe sunum"
+        nextTask: "Son görev: Üst yönetim müzakeresi"
       }
     },
     en: {
@@ -94,7 +94,7 @@ export default function OnepagerTask({ onComplete, pricingResult, language = "tr
       result: {
         title: "One-pager Completed",
         message: "Your findings have been successfully summarized and prepared for top management.",
-        nextTask: "Final task: Presentation to global team"
+        nextTask: "Final task: Executive negotiation"
       }
     }
   };

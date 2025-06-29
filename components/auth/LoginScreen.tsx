@@ -122,8 +122,11 @@ export function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#eaf6f2] px-4">
       <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
-        <div className="w-16 h-16 mb-6">
-          <TrailieLogo className="w-full h-full" />
+        <div className="flex flex-col items-center mb-4 mt-2">
+          <div className="flex items-center gap-3 justify-center">
+            <TrailieLogo className="w-16 h-16" />
+            <span className="text-3xl font-bold text-gray-900 align-middle" style={{lineHeight: '1.1'}}>Trailie</span>
+          </div>
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-3 leading-snug">
           {t.title}

@@ -11,7 +11,7 @@ interface SimulationIntroProps {
   language?: "en" | "tr";
 }
 
-export default function SimulationIntro({ onStart, language = "tr" }: SimulationIntroProps) {
+export default function SimulationIntro({ onStart, language }: SimulationIntroProps) {
   const [isStarting, setIsStarting] = useState(false);
 
   const content = {
@@ -33,8 +33,8 @@ export default function SimulationIntro({ onStart, language = "tr" }: Simulation
           icon: FileText
         },
         {
-          title: "Global Ekibe Sunum",
-          description: "One-pager çalışmanızı sanal toplantıda sunum tarzında gösterin",
+          title: "Üst Yönetim Müzakeresi",
+          description: "Fiyatlandırma stratejinizi CEO ve CFO ile tartışın, sorulara yanıt verin ve stratejinizi savunun.",
           icon: Presentation
         }
       ],
@@ -58,8 +58,8 @@ export default function SimulationIntro({ onStart, language = "tr" }: Simulation
           icon: FileText
         },
         {
-          title: "Present to Global Team",
-          description: "Show your one-page work in a presentation-style during a virtual meeting",
+          title: "Executive Negotiation",
+          description: "Discuss your pricing strategy with the CEO and CFO, answer their questions, and defend your approach.",
           icon: Presentation
         }
       ],
@@ -67,7 +67,7 @@ export default function SimulationIntro({ onStart, language = "tr" }: Simulation
     }
   };
 
-  const currentContent = content[language];
+  const currentContent = content[language === "en" ? "en" : "tr"];
 
   const handleStart = () => {
     setIsStarting(true);
