@@ -1457,3 +1457,5 @@ export default function CareerDiscoveryApp() {
     </div>
   );
 }
+
+export const dynamic = "force-dynamic";
