@@ -1,14 +1,14 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut, FileText } from "lucide-react";
+import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut, FileText, ArrowLeft } from "lucide-react";
 import { TrailieLogo } from "@/components/auth/TrailieLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import ModuleMenu from "@/components/ModuleMenu";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-export default function TopBar({ onModuleSelect }: { onModuleSelect?: (key: string) => void }) {
+export default function TopBar({ onModuleSelect, onBack, onViewPackages }: { onModuleSelect?: (key: string) => void, onBack?: () => void, onViewPackages?: () => void }) {
   const { user, userType } = useAuth();
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
@@ -58,22 +58,34 @@ export default function TopBar({ onModuleSelect }: { onModuleSelect?: (key: stri
     <>
       <div className="fixed top-0 left-0 w-full z-40 bg-white/80 backdrop-blur border-b border-gray-100 shadow-sm">
         <div className="relative flex items-center justify-center max-w-4xl mx-auto w-full px-2 md:px-4 py-2 overflow-x-auto whitespace-nowrap">
-          {/* Sol: Hamburger + Home */}
+          {/* Sol: Hamburger + Home veya Geri Butonu */}
           <div className="flex items-center gap-1 md:gap-2 min-w-0 flex-shrink-0">
-            <button
-              className="p-2 rounded-full hover:bg-gray-100 focus:outline-none flex-shrink-0"
-              onClick={() => setMenuOpen(true)}
-              aria-label={language === 'tr' ? 'Menüyü Aç' : 'Open Menu'}
-            >
-              <Menu className="w-6 h-6 md:w-6 md:h-6 text-gray-800" />
-            </button>
-            <button
-              className="flex items-center gap-1 text-gray-700 hover:text-primary font-semibold text-base md:text-lg flex-shrink-0"
-              onClick={() => onModuleSelect?.("dashboard")}
-              aria-label={language === 'tr' ? 'Ana Sayfa' : 'Home'}
-            >
-              <Home className="w-6 h-6 md:w-6 md:h-6" />
-            </button>
+            {onBack ? (
+              <button
+                className="p-2 rounded-full hover:bg-gray-100 focus:outline-none flex-shrink-0"
+                onClick={onBack}
+                aria-label={language === 'tr' ? 'Geri' : 'Back'}
+              >
+                <ArrowLeft className="w-6 h-6 md:w-6 md:h-6 text-gray-800" />
+              </button>
+            ) : (
+              <>
+                <button
+                  className="p-2 rounded-full hover:bg-gray-100 focus:outline-none flex-shrink-0"
+                  onClick={() => setMenuOpen(true)}
+                  aria-label={language === 'tr' ? 'Menüyü Aç' : 'Open Menu'}
+                >
+                  <Menu className="w-6 h-6 md:w-6 md:h-6 text-gray-800" />
+                </button>
+                <button
+                  className="flex items-center gap-1 text-gray-700 hover:text-primary font-semibold text-base md:text-lg flex-shrink-0"
+                  onClick={() => onModuleSelect?.("dashboard")}
+                  aria-label={language === 'tr' ? 'Ana Sayfa' : 'Home'}
+                >
+                  <Home className="w-6 h-6 md:w-6 md:h-6" />
+                </button>
+              </>
+            )}
           </div>
           {/* Başlık ve logo ortada, absolute ve sm: altında gizli */}
           <div className="hidden sm:flex items-center gap-2 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none truncate max-w-[60vw] md:max-w-xs text-center">
@@ -162,7 +174,7 @@ export default function TopBar({ onModuleSelect }: { onModuleSelect?: (key: stri
             >
               <X className="w-6 h-6" />
             </button>
-            <ModuleMenu onSelect={(key) => { setMenuOpen(false); onModuleSelect?.(key); }} drawerOnly />
+            <ModuleMenu onSelect={(key) => { setMenuOpen(false); onModuleSelect?.(key); }} onViewPackages={onViewPackages} drawerOnly />
           </div>
           <div className="flex-1" onClick={() => setMenuOpen(false)} />
         </div>

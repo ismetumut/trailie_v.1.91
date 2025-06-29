@@ -2,58 +2,68 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, Lock } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Check, Lock, Star } from "lucide-react"
 
 interface ModuleCardProps {
-  module: {
-    id: string
-    name: string
-    price: number
-    currency: "USD"
-    type: "one-time" | "monthly"
-    description: string
-    features: string[]
-    isPurchased: boolean
-  }
-  status: "purchased" | "locked" | "available"
-  onPurchase: () => void
-  onAccess: () => void
+  title: string;
+  features: string[];
+  price: string;
+  isBest?: boolean;
+  locked?: boolean;
+  onSelect: () => void;
+  language?: "tr" | "en";
 }
 
-export function ModuleCard({ module, status, onPurchase, onAccess }: ModuleCardProps) {
+export default function ModuleCard({
+  title,
+  features,
+  price,
+  isBest = false,
+  locked = false,
+  onSelect,
+  language = "tr"
+}: ModuleCardProps) {
   return (
-    <Card className={`relative ${status === "purchased" ? "ring-2 ring-green-500" : ""}`}>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{module.name}</CardTitle>
-          {status === "purchased" && <CheckCircle className="w-6 h-6 text-green-600" />}
-          {status === "locked" && <Lock className="w-6 h-6 text-gray-400" />}
+    <Card className={`relative ${isBest ? 'ring-2 ring-blue-500 shadow-lg' : ''} hover:shadow-md transition-all duration-200`}>
+      {isBest && (
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          <Badge className="bg-blue-500 text-white px-3 py-1 flex items-center gap-1">
+            <Star className="w-3 h-3" />
+            {language === "tr" ? "En Popüler" : "Most Popular"}
+          </Badge>
         </div>
-        <div className="text-2xl font-bold">
-          ${module.price}
-          {module.type === "monthly" && <span className="text-sm font-normal text-gray-600">/ay</span>}
-        </div>
-        <p className="text-sm text-gray-600">{module.description}</p>
+      )}
+      
+      <CardHeader className="text-center pb-4">
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+        <div className="text-3xl font-bold text-blue-600">{price}</div>
       </CardHeader>
+      
       <CardContent className="space-y-4">
-        <ul className="space-y-2">
-          {module.features.map((feature, index) => (
-            <li key={index} className="flex items-center space-x-2 text-sm">
-              <CheckCircle className="w-4 h-4 text-green-600" />
-              <span>{feature}</span>
-            </li>
+        <div className="space-y-2">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-center gap-2 text-sm">
+              <Check className="w-4 h-4 text-green-500 flex-shrink-0" />
+              <span className="text-gray-700">{feature}</span>
+            </div>
           ))}
-        </ul>
-
-        {status === "purchased" ? (
-          <Button className="w-full" onClick={onAccess}>
-            Modülü Kullan
-          </Button>
-        ) : (
-          <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={onPurchase}>
-            Satın Al
-          </Button>
-        )}
+        </div>
+        
+        <Button 
+          onClick={onSelect}
+          className={`w-full ${isBest ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-800 hover:bg-gray-900'}`}
+          size="lg"
+        >
+          {locked ? (
+            <>
+              <Lock className="w-4 h-4 mr-2" />
+              {language === "tr" ? "Kilidi Aç" : "Unlock"}
+            </>
+          ) : (
+            language === "tr" ? "Satın Al" : "Purchase"
+          )}
+        </Button>
       </CardContent>
     </Card>
   )

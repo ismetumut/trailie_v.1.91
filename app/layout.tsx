@@ -5,7 +5,7 @@ import ChatbotPortal from '@/components/ChatbotPortal';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body>
+      <body suppressHydrationWarning>
         <ClientProviders>
           {children}
           <ChatbotPortal />

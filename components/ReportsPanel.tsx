@@ -15,24 +15,35 @@ const content = {
     close: "Kapat",
     discReport: {
       title: "DISC Kişilik Raporu",
-      summary: "Baskın tipiniz: D (Dominant). Liderlik ve sonuç odaklılık öne çıkıyor.",
+      summary: "Baskın tipiniz: D (Dominant). Liderlik ve sonuç odaklılık öne çıkıyor. AI yorumu: Takım içinde liderlik rolünü üstleniyorsunuz, hızlı karar alabiliyor ve zorluklardan yılmıyorsunuz. Gelişim için sosyal etkileşim ve esneklik üzerinde çalışabilirsiniz.",
       score: 88,
-      strengths: ["Liderlik", "Kararlılık", "Sonuç Odaklılık"],
-      devAreas: ["Esneklik", "Sosyal Etkileşim"]
+      strengths: ["Liderlik", "Kararlılık", "Sonuç Odaklılık", "Hızlı Karar"],
+      devAreas: ["Esneklik", "Sosyal Etkileşim", "Empati"],
+      details: "AI Analizi: D tipi kişiliğinizle, baskı altında dahi hedef odaklı kalabiliyor ve ekibinizi motive edebiliyorsunuz. Zaman zaman daha fazla empati ve esneklik göstermek, takım içi iletişimi güçlendirecektir.",
+      spider: {
+        labels: ["Liderlik", "İletişim", "Analitik", "Uyum", "Motivasyon", "Empati"],
+        data: [95, 70, 80, 60, 85, 55]
+      }
     },
     expertiseReport: {
       title: "Uzmanlık Analizi Raporu",
-      summary: "En güçlü alanınız: Pazarlama. Stratejik düşünme ve yaratıcılık yüksek.",
+      summary: "En güçlü alanınız: Pazarlama. Stratejik düşünme, yaratıcılık ve veri analizi becerileriniz yüksek. AI yorumu: Dijital kampanya yönetiminde ve marka stratejisinde öne çıkıyorsunuz.",
       score: 91,
-      strengths: ["Stratejik Düşünme", "Yaratıcılık"],
-      devAreas: ["Teknik Analiz"]
+      strengths: ["Stratejik Düşünme", "Yaratıcılık", "Veri Analizi"],
+      devAreas: ["Teknik Analiz", "Sunum Becerisi"],
+      details: "AI Analizi: Pazarlama alanında yenilikçi fikirler üretebiliyor ve veriye dayalı kararlar alabiliyorsunuz. Teknik analiz ve sunum becerilerinizi geliştirmeniz önerilir."
     },
     assessmentReport: {
       title: "Assessment Raporu",
-      summary: "Açık uçlu sorularda iletişim ve problem çözme becerileriniz öne çıktı.",
+      summary: "Açık uçlu sorularda iletişim, problem çözme ve takım çalışması becerileriniz öne çıktı. AI yorumu: Zorlu durumlarda analitik düşünerek çözüm üretiyor, takım içinde uyumlu çalışıyorsunuz.",
       score: 85,
-      strengths: ["İletişim", "Problem Çözme"],
-      devAreas: ["Detaycılık"]
+      strengths: ["İletişim", "Problem Çözme", "Takım Çalışması", "Analitik Düşünme"],
+      devAreas: ["Detaycılık", "Zaman Yönetimi"],
+      details: "AI Analizi: Özellikle karmaşık problemlerde hızlı ve etkili çözümler üretebiliyorsunuz. Zaman yönetimi ve detaylara daha fazla odaklanmak gelişiminizi destekleyecektir.",
+      spider: {
+        labels: ["İletişim", "Analitik", "Takım Çalışması", "Yaratıcılık", "Liderlik", "Zaman Yönetimi"],
+        data: [90, 80, 85, 75, 70, 60]
+      }
     }
   },
   en: {
@@ -43,27 +54,51 @@ const content = {
     close: "Close",
     discReport: {
       title: "DISC Personality Report",
-      summary: "Your dominant type: D (Dominant). Leadership and result-orientation stand out.",
+      summary: "Your dominant type: D (Dominant). Leadership and result-orientation stand out. AI comment: You take the lead in teams, make quick decisions, and are not afraid of challenges. For development, focus on flexibility and social interaction.",
       score: 88,
-      strengths: ["Leadership", "Decisiveness", "Result-Oriented"],
-      devAreas: ["Flexibility", "Social Interaction"]
+      strengths: ["Leadership", "Decisiveness", "Result-Oriented", "Quick Decision"],
+      devAreas: ["Flexibility", "Social Interaction", "Empathy"],
+      details: "AI Analysis: With your D-type personality, you remain goal-oriented even under pressure and can motivate your team. Sometimes, showing more empathy and flexibility will strengthen team communication.",
+      spider: {
+        labels: ["Leadership", "Communication", "Analytical", "Adaptability", "Motivation", "Empathy"],
+        data: [95, 70, 80, 60, 85, 55]
+      }
     },
     expertiseReport: {
       title: "Expertise Analysis Report",
-      summary: "Your strongest area: Marketing. Strategic thinking and creativity are high.",
+      summary: "Your strongest area: Marketing. Strategic thinking, creativity, and data analysis skills are high. AI comment: You excel in digital campaign management and brand strategy.",
       score: 91,
-      strengths: ["Strategic Thinking", "Creativity"],
-      devAreas: ["Technical Analysis"]
+      strengths: ["Strategic Thinking", "Creativity", "Data Analysis"],
+      devAreas: ["Technical Analysis", "Presentation Skills"],
+      details: "AI Analysis: You can generate innovative ideas in marketing and make data-driven decisions. Improving your technical analysis and presentation skills is recommended."
     },
     assessmentReport: {
       title: "Assessment Report",
-      summary: "In open-ended questions, your communication and problem-solving skills stood out.",
+      summary: "In open-ended questions, your communication, problem-solving, and teamwork skills stood out. AI comment: You produce solutions analytically in challenging situations and work harmoniously in teams.",
       score: 85,
-      strengths: ["Communication", "Problem Solving"],
-      devAreas: ["Attention to Detail"]
+      strengths: ["Communication", "Problem Solving", "Teamwork", "Analytical Thinking"],
+      devAreas: ["Attention to Detail", "Time Management"],
+      details: "AI Analysis: You can quickly and effectively solve complex problems. Focusing more on time management and details will support your development.",
+      spider: {
+        labels: ["Communication", "Analytical", "Teamwork", "Creativity", "Leadership", "Time Management"],
+        data: [90, 80, 85, 75, 70, 60]
+      }
     }
   }
 };
+
+interface ReportData {
+  title: string;
+  summary: string;
+  score: number;
+  strengths: string[];
+  devAreas: string[];
+  details: string;
+  spider?: {
+    labels: string[];
+    data: number[];
+  };
+}
 
 interface ReportsPanelProps {
   language?: 'tr' | 'en';
@@ -73,7 +108,7 @@ export default function ReportsPanel({ language = "tr" }: ReportsPanelProps) {
   const t = content[language];
   const [open, setOpen] = useState<null | "disc" | "expertise" | "assessment">(null);
 
-  const reportData =
+  const reportData: ReportData | null =
     open === "disc"
       ? t.discReport
       : open === "expertise"
@@ -137,6 +172,17 @@ export default function ReportsPanel({ language = "tr" }: ReportsPanelProps) {
                     {reportData.devAreas.map((s: string, i: number) => <li key={i}>{s}</li>)}
                   </ul>
                 </div>
+              </div>
+              {reportData.spider && (
+                <div className="my-6">
+                  <div className="font-semibold text-center mb-2 text-blue-700">{language === "tr" ? "Yetenek Profili (Spider Grafiği)" : "Skill Profile (Spider Chart)"}</div>
+                  <div className="text-center text-gray-600 text-sm">
+                    {language === "tr" ? "Grafik yükleniyor..." : "Chart loading..."}
+                  </div>
+                </div>
+              )}
+              <div className="mt-4 text-gray-600 text-sm whitespace-pre-line">
+                {reportData.details}
               </div>
               <div className="flex justify-center mt-6">
                 <Button className="rounded-full px-6 py-2 font-semibold bg-gradient-to-r from-gray-200 to-gray-50 text-gray-700 border-0 shadow hover:bg-gray-100" variant="outline" onClick={() => setOpen(null)}>{t.close}</Button>

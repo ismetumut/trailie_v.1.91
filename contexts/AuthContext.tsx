@@ -63,5 +63,25 @@ export function useAuth() {
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+  
+  // Demo kullanıcı desteği - sadece client-side
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  if (isClient && !context.user && !context.userType) {
+    // Sadece URL'de ?demo=1 varsa demo kullanıcı döndür
+    if (typeof window !== 'undefined' && window.location.search.includes('demo=1')) {
+      return {
+        ...context,
+        user: { uid: 'demo', displayName: 'Demo User', email: 'demo@trailie.com' } as any,
+        userType: 'individual',
+        isAuthenticated: true,
+      };
+    }
+  }
+  
   return context;
 } 

@@ -34,9 +34,35 @@ import JobDiscovery from '@/components/jobs/JobDiscovery';
 import InterviewPrep from '@/components/interview/InterviewPrep';
 import MockInterview from '@/components/interview/MockInterview';
 import InterviewEvaluation from '@/components/interview/InterviewEvaluation';
+import { CompanyLogin } from "@/components/company/CompanyLogin";
 
 type UserType = 'individual' | 'company';
-type AppState = 'login' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'dashboard' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete' | 'cv' | 'resumes' | 'profile' | 'messages' | 'settings' | 'help' | 'job-discovery' | 'interview-prep' | 'mock-interview' | 'interview-evaluation';
+type AppState = 
+  | 'login' 
+  | 'assessment' 
+  | 'assessment-result' 
+  | 'expertise' 
+  | 'admin' 
+  | 'dashboard' 
+  | 'results' 
+  | 'expertise-results' 
+  | 'simulation' 
+  | 'simulation-pricing' 
+  | 'simulation-onepager' 
+  | 'simulation-presentation' 
+  | 'simulation-complete' 
+  | 'cv' 
+  | 'resumes' 
+  | 'profile' 
+  | 'messages' 
+  | 'settings' 
+  | 'help' 
+  | 'job-discovery' 
+  | 'interview-prep' 
+  | 'mock-interview' 
+  | 'interview-evaluation' 
+  | 'company-login' 
+  | 'company-dashboard';
 
 interface DISCProfile {
   dominant: 'D' | 'I' | 'S' | 'C';
@@ -514,7 +540,7 @@ const expertiseQuestionsTR = [
 
 export default function Page() {
   const { user, userType, setAuthUserType } = useAuth();
-  const [appState, setAppState] = useState<'login' | 'dashboard' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete' | 'cv' | 'resumes' | 'profile' | 'messages' | 'settings' | 'help' | 'job-discovery' | 'interview-prep' | 'mock-interview' | 'interview-evaluation'>('login');
+  const [appState, setAppState] = useState<AppState>('login');
   const [discResult, setDiscResult] = useState<any>(null);
   const [expertiseResult, setExpertiseResult] = useState<any>(null);
   const [dashboardKey, setDashboardKey] = useState(0);
@@ -651,18 +677,37 @@ export default function Page() {
     }
   };
 
+  const handleCompanyLogin = (companyData: any) => {
+    // Demo için basit bir company login
+    console.log('Company login:', companyData);
+    setAppState('company-dashboard');
+  };
+
+  const handleLogin = (userType?: 'company' | 'individual') => {
+    // Demo için basit bir login
+    console.log('User login:', userType);
+    if (userType === 'company') {
+      setAppState('company-dashboard');
+    } else {
+      setAppState('dashboard');
+    }
+  };
+
   // Tüm ekranlarda hamburger menü görünür olacak şekilde üstte render et
     return (
     <>
       <div className="pt-14">
         {user || userType ? <TopBar onModuleSelect={handleModuleSelect} /> : null}
-        <ModuleMenu onSelect={handleModuleSelect} />
         {(() => {
           // Giriş yapılmamışsa login ekranı
           if (!user && !userType) {
             return <LoginScreen onLoginSuccess={(userType) => {
               setAuthUserType(userType || 'individual');
-              setAppState('dashboard');
+              if (userType === 'company') {
+                setAppState('company-dashboard');
+              } else {
+                setAppState('dashboard');
+              }
             }} />;
           }
           // Admin paneli
@@ -749,7 +794,12 @@ export default function Page() {
           // Modül akışı
           switch (appState) {
             case 'dashboard':
-              return <CareerDashboard key={dashboardKey} onModuleSelect={handleModuleSelect} />;
+              const handleModuleRoute = (key: string) => {
+                if (key === 'assessment' || key === 'expertise') {
+                  setAppState(key as AppState);
+                }
+              };
+              return <CareerDashboard key={dashboardKey} onModuleRoute={handleModuleRoute} />;
             case 'assessment':
               return <PersonalityQuestion key={language} questions={discQuestions} onComplete={(_answers, discProfile) => { setDiscResult(discProfile); setAppState('assessment-result'); }} />;
             case 'expertise':
@@ -845,8 +895,14 @@ export default function Page() {
               return <MockInterview language={language} onFinish={(answers) => { setMockAnswers(answers); setAppState('interview-evaluation'); }} />;
             case 'interview-evaluation':
               return <InterviewEvaluation language={language} onClose={() => setAppState('dashboard')} />;
+            case 'login':
+              return <LoginScreen onLoginSuccess={handleLogin} />;
+            case 'company-login':
+              return <CompanyLogin onLogin={handleCompanyLogin} language={language} />;
+            case 'company-dashboard':
+              return <AdminPanel />;
             default:
-              return <CareerDashboard onModuleSelect={handleModuleSelect} />;
+              return <CareerDashboard />;
           }
         })()}
                 </div>
