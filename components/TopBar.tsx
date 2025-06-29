@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut, FileText } from "lucide-react";
 import { TrailieLogo } from "@/components/auth/TrailieLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import ModuleMenu from "@/components/ModuleMenu";
@@ -29,22 +29,24 @@ export default function TopBar({ onModuleSelect }: { onModuleSelect?: (key: stri
       name: 'Demo Kullanıcı',
       email: 'demo@trailie.com',
       menu: [
-        { icon: <UserCircle className="w-5 h-5" />, label: 'Profil' },
-        { icon: <Mail className="w-5 h-5" />, label: 'Mesajlar' },
-        { icon: <Settings className="w-5 h-5" />, label: 'Ayarlar' },
-        { icon: <HelpCircle className="w-5 h-5" />, label: 'Yardım' },
-        { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Çıkış Yap', danger: true },
+        { icon: <UserCircle className="w-5 h-5" />, label: 'Profil', key: 'profile' },
+        { icon: <Mail className="w-5 h-5" />, label: 'Mesajlar', key: 'messages' },
+        { icon: <Settings className="w-5 h-5" />, label: 'Ayarlar', key: 'settings' },
+        { icon: <HelpCircle className="w-5 h-5" />, label: 'Yardım', key: 'help' },
+        { icon: <FileText className="w-5 h-5 text-blue-500" />, label: 'Özgeçmişlerim', key: 'resumes' },
+        { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Çıkış Yap', key: 'logout', danger: true },
       ]
     },
     en: {
       name: 'Demo User',
       email: 'demo@trailie.com',
       menu: [
-        { icon: <UserCircle className="w-5 h-5" />, label: 'Profile' },
-        { icon: <Mail className="w-5 h-5" />, label: 'Messages' },
-        { icon: <Settings className="w-5 h-5" />, label: 'Settings' },
-        { icon: <HelpCircle className="w-5 h-5" />, label: 'Help' },
-        { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Log Out', danger: true },
+        { icon: <UserCircle className="w-5 h-5" />, label: 'Profile', key: 'profile' },
+        { icon: <Mail className="w-5 h-5" />, label: 'Messages', key: 'messages' },
+        { icon: <Settings className="w-5 h-5" />, label: 'Settings', key: 'settings' },
+        { icon: <HelpCircle className="w-5 h-5" />, label: 'Help', key: 'help' },
+        { icon: <FileText className="w-5 h-5 text-blue-500" />, label: 'My Resumes', key: 'resumes' },
+        { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Log Out', key: 'logout', danger: true },
       ]
     }
   };
@@ -115,7 +117,16 @@ export default function TopBar({ onModuleSelect }: { onModuleSelect?: (key: stri
                 <ul className="py-2">
                   {profile.menu.map((item, i) => (
                     <li key={i}>
-                      <button className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${item.danger ? 'text-red-600 font-semibold' : 'text-gray-800 hover:bg-gray-50'} transition`}> 
+                      <button
+                        className={`flex items-center gap-2 w-full px-4 py-2 text-sm ${item.danger ? 'text-red-600 font-semibold' : 'text-gray-800 hover:bg-gray-50'} transition`}
+                        onClick={() => {
+                          if (item.key === 'logout') {
+                            // Çıkış işlemi burada yapılabilir
+                          } else if (onModuleSelect && item.key) {
+                            onModuleSelect(item.key);
+                          }
+                        }}
+                      >
                         {item.icon}
                         {item.label}
                       </button>

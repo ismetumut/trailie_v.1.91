@@ -24,9 +24,19 @@ import ModuleMenu from '@/components/ModuleMenu';
 import TopBar from '@/components/TopBar';
 import { useLanguage } from '@/contexts/LanguageContext';
 import AISimulationReport from '@/components/AISimulationReport';
+import CVCreator from '@/components/cv/CVCreator';
+import CVList from '@/components/cv/CVList';
+import ProfileMain from '@/components/profile/ProfileMain';
+import ProfileMessages from '@/components/profile/ProfileMessages';
+import ProfileSettings from '@/components/profile/ProfileSettings';
+import ProfileHelp from '@/components/profile/ProfileHelp';
+import JobDiscovery from '@/components/jobs/JobDiscovery';
+import InterviewPrep from '@/components/interview/InterviewPrep';
+import MockInterview from '@/components/interview/MockInterview';
+import InterviewEvaluation from '@/components/interview/InterviewEvaluation';
 
 type UserType = 'individual' | 'company';
-type AppState = 'login' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'dashboard' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete';
+type AppState = 'login' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'dashboard' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete' | 'cv' | 'resumes' | 'profile' | 'messages' | 'settings' | 'help' | 'job-discovery' | 'interview-prep' | 'mock-interview' | 'interview-evaluation';
 
 interface DISCProfile {
   dominant: 'D' | 'I' | 'S' | 'C';
@@ -504,11 +514,12 @@ const expertiseQuestionsTR = [
 
 export default function Page() {
   const { user, userType, setAuthUserType } = useAuth();
-  const [appState, setAppState] = useState<'login' | 'dashboard' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete'>('login');
+  const [appState, setAppState] = useState<'login' | 'dashboard' | 'assessment' | 'assessment-result' | 'expertise' | 'admin' | 'results' | 'expertise-results' | 'simulation' | 'simulation-pricing' | 'simulation-onepager' | 'simulation-presentation' | 'simulation-complete' | 'cv' | 'resumes' | 'profile' | 'messages' | 'settings' | 'help' | 'job-discovery' | 'interview-prep' | 'mock-interview' | 'interview-evaluation'>('login');
   const [discResult, setDiscResult] = useState<any>(null);
   const [expertiseResult, setExpertiseResult] = useState<any>(null);
   const [dashboardKey, setDashboardKey] = useState(0);
   const { language } = useLanguage();
+  const [mockAnswers, setMockAnswers] = useState<string[] | null>(null);
 
   // Tüm metinleri iki dilde tanımla
   const TEXT = {
@@ -601,13 +612,29 @@ export default function Page() {
         setAppState('simulation');
         break;
       case 'cv':
-        // CV modülüne yönlendirme eklenebilir
+        setAppState('cv');
         break;
+      case 'resumes':
+        setAppState('resumes');
+        break;
+      case 'profile':
+        setAppState('profile');
+        break;
+      case 'messages':
+        setAppState('messages');
+        break;
+      case 'settings':
+        setAppState('settings');
+        break;
+      case 'help':
+        setAppState('help');
+        break;
+      case 'job-discovery':
       case 'jobs':
-        // İş ilanları modülüne yönlendirme eklenebilir
+        setAppState('job-discovery');
         break;
       case 'interview':
-        // Mülakat modülüne yönlendirme eklenebilir
+        setAppState('interview-prep');
         break;
       case 'networking':
         // Networking modülüne yönlendirme eklenebilir
@@ -727,6 +754,18 @@ export default function Page() {
               return <PersonalityQuestion key={language} questions={discQuestions} onComplete={(_answers, discProfile) => { setDiscResult(discProfile); setAppState('assessment-result'); }} />;
             case 'expertise':
               return <ExpertiseQuestion key={language} questions={expertiseQuestions} onComplete={(_answers, expertiseProfile) => { setExpertiseResult(expertiseProfile); setAppState('expertise-results'); }} />;
+            case 'cv':
+              return <CVCreator language={language} />;
+            case 'resumes':
+              return <CVList language={language} />;
+            case 'profile':
+              return <ProfileMain language={language} />;
+            case 'messages':
+              return <ProfileMessages language={language} />;
+            case 'settings':
+              return <ProfileSettings language={language} />;
+            case 'help':
+              return <ProfileHelp language={language} />;
             case 'expertise-results':
               if (!expertiseResult) return null;
               const expType = expertiseResult.dominant as keyof typeof EXPERTISE_REPORT[typeof language];
@@ -798,6 +837,14 @@ export default function Page() {
                 simulationResults={null}
                 language={language}
               />;
+            case 'job-discovery':
+              return <JobDiscovery language={language} />;
+            case 'interview-prep':
+              return <InterviewPrep language={language} onStartMock={() => setAppState('mock-interview')} />;
+            case 'mock-interview':
+              return <MockInterview language={language} onFinish={(answers) => { setMockAnswers(answers); setAppState('interview-evaluation'); }} />;
+            case 'interview-evaluation':
+              return <InterviewEvaluation language={language} onClose={() => setAppState('dashboard')} />;
             default:
               return <CareerDashboard onModuleSelect={handleModuleSelect} />;
           }
