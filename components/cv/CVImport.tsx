@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Linkedin, Upload, FileText, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, FileText, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
 
 const content = {
   tr: {
@@ -176,7 +176,7 @@ export default function CVImport({
             onClick={onBack}
             className="absolute top-4 left-4"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <img src="/arrow-left.svg" alt="Back" className="w-4 h-4 mr-2" />
             {t.backBtn}
           </Button>
           <CardTitle className="text-2xl font-bold text-center">{t.title}</CardTitle>
@@ -190,7 +190,7 @@ export default function CVImport({
                 className="flex items-center justify-center gap-3 py-6 text-lg font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-blue-700 border-blue-200 hover:bg-blue-50"
                 onClick={() => setImportMethod("linkedin")}
               >
-                <Linkedin className="w-6 h-6" />
+                <img src="/linkedin.svg" alt="LinkedIn" className="w-6 h-6" />
                 <div className="text-left">
                   <div className="font-bold">{t.linkedinTitle}</div>
                   <div className="text-sm text-gray-600">{t.linkedinDesc}</div>
@@ -202,7 +202,7 @@ export default function CVImport({
                 className="flex items-center justify-center gap-3 py-6 text-lg font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-green-700 border-green-200 hover:bg-green-50"
                 onClick={() => setImportMethod("file")}
               >
-                <Upload className="w-6 h-6" />
+                <img src="/upload.svg" alt="Upload" className="w-6 h-6" />
                 <div className="text-left">
                   <div className="font-bold">{t.fileTitle}</div>
                   <div className="text-sm text-gray-600">{t.fileDesc}</div>
@@ -212,7 +212,7 @@ export default function CVImport({
           ) : importMethod === "linkedin" ? (
             <div className="space-y-4">
               <div className="text-center">
-                <Linkedin className="w-12 h-12 text-blue-600 mx-auto mb-2" />
+                <img src="/linkedin.svg" alt="LinkedIn" className="w-12 h-12 text-blue-600 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold">{t.linkedinTitle}</h3>
               </div>
               <Input
@@ -242,7 +242,7 @@ export default function CVImport({
           ) : (
             <div className="space-y-4">
               <div className="text-center">
-                <Upload className="w-12 h-12 text-green-600 mx-auto mb-2" />
+                <img src="/upload.svg" alt="Upload" className="w-12 h-12 text-green-600 mx-auto mb-2" />
                 <h3 className="text-lg font-semibold">{t.fileTitle}</h3>
                 <p className="text-sm text-gray-600">{t.supportedFormats}</p>
               </div>
@@ -254,12 +254,12 @@ export default function CVImport({
               >
                 {selectedFile ? (
                   <div className="flex items-center justify-center gap-2">
-                    <FileText className="w-6 h-6 text-green-600" />
+                    <img src="/file-text.svg" alt="File" className="w-6 h-6 text-green-600" />
                     <span className="font-medium">{selectedFile.name}</span>
                   </div>
                 ) : (
                   <div>
-                    <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <img src="/upload.svg" alt="Upload" className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-600">{t.dragDrop}</p>
                   </div>
                 )}
@@ -299,14 +299,14 @@ export default function CVImport({
 
           {status === "success" && (
             <div className="flex items-center justify-center gap-2 text-green-600">
-              <CheckCircle className="w-5 h-5" />
+              <img src="/check-circle.svg" alt="Success" className="w-5 h-5" />
               {t.success}
             </div>
           )}
 
           {status === "error" && (
             <div className="flex items-center justify-center gap-2 text-red-600">
-              <AlertCircle className="w-5 h-5" />
+              <img src="/alert-circle.svg" alt="Error" className="w-5 h-5" />
               {t.error}
             </div>
           )}

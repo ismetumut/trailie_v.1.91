@@ -41,7 +41,7 @@ export default function CVStart({ language = "tr", onSelect }: { language?: "tr"
               className={`flex items-center justify-center gap-2 py-4 text-lg font-semibold rounded-xl shadow transition-all duration-200 ${selected === "linkedin" ? 'bg-gradient-to-r from-blue-500 to-blue-300 text-white' : 'bg-white/80 text-blue-700 border-blue-200 hover:bg-blue-50'}`}
               onClick={() => setSelected("linkedin")}
             >
-              <Linkedin className="w-6 h-6" /> {t.optionLinkedin}
+              <img src="/linkedin.svg" alt="LinkedIn" className="w-6 h-6" /> {t.optionLinkedin}
             </Button>
             <Button
               variant={selected === "manual" ? "default" : "outline"}

@@ -544,8 +544,9 @@ export default function Page() {
   const [discResult, setDiscResult] = useState<any>(null);
   const [expertiseResult, setExpertiseResult] = useState<any>(null);
   const [dashboardKey, setDashboardKey] = useState(0);
-  const { language } = useLanguage();
+  const [language, setLanguage] = useState<'tr' | 'en'>('en');
   const [mockAnswers, setMockAnswers] = useState<string[] | null>(null);
+  const [premiumUnlocked, setPremiumUnlocked] = useState(false);
 
   // Tüm metinleri iki dilde tanımla
   const TEXT = {
@@ -697,7 +698,12 @@ export default function Page() {
     return (
     <>
       <div className="pt-14">
-        {user || userType ? <TopBar onModuleSelect={handleModuleSelect} /> : null}
+        {user || userType ? <TopBar onModuleSelect={handleModuleSelect} onViewPackages={() => setPremiumUnlocked(true)} premiumUnlocked={premiumUnlocked} onUnlockPremium={() => setPremiumUnlocked(true)} /> : null}
+        {!premiumUnlocked && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <button onClick={() => setPremiumUnlocked(true)} className="px-4 py-2 rounded-lg bg-amber-500 text-white font-bold shadow-lg">Demo Premium'u Aç</button>
+          </div>
+        )}
         {(() => {
           // Giriş yapılmamışsa login ekranı
           if (!user && !userType) {
@@ -898,9 +904,9 @@ export default function Page() {
             case 'login':
               return <LoginScreen onLoginSuccess={handleLogin} />;
             case 'company-login':
-              return <CompanyLogin onLogin={handleCompanyLogin} language={language} />;
+              return <CompanyLogin onLogin={handleCompanyLogin} language={language} onLanguageChange={setLanguage} />;
             case 'company-dashboard':
-              return <AdminPanel />;
+              return <AdminPanel language={language} />;
             default:
               return <CareerDashboard />;
           }

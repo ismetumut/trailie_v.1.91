@@ -8,7 +8,7 @@ import ModuleMenu from "@/components/ModuleMenu";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-export default function TopBar({ onModuleSelect, onBack, onViewPackages }: { onModuleSelect?: (key: string) => void, onBack?: () => void, onViewPackages?: () => void }) {
+export default function TopBar({ onModuleSelect, onBack, onViewPackages, premiumUnlocked, onUnlockPremium }: { onModuleSelect?: (key: string) => void, onBack?: () => void, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
   const { user, userType } = useAuth();
   const router = useRouter();
   const { language, setLanguage } = useLanguage();
@@ -170,11 +170,11 @@ export default function TopBar({ onModuleSelect, onBack, onViewPackages }: { onM
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
               onClick={() => setMenuOpen(false)}
-              aria-label="Menüyü Kapat"
+              aria-label={language === 'tr' ? 'Menüyü Kapat' : 'Close Menu'}
             >
               <X className="w-6 h-6" />
             </button>
-            <ModuleMenu onSelect={(key) => { setMenuOpen(false); onModuleSelect?.(key); }} onViewPackages={onViewPackages} drawerOnly />
+            <ModuleMenu onSelect={(key) => { setMenuOpen(false); onModuleSelect?.(key); }} onViewPackages={onViewPackages} drawerOnly premiumUnlocked={premiumUnlocked} onUnlockPremium={onUnlockPremium} />
           </div>
           <div className="flex-1" onClick={() => setMenuOpen(false)} />
         </div>

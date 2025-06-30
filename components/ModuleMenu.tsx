@@ -53,7 +53,7 @@ const TEXT = {
   }
 };
 
-export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages }: { onSelect?: (key: string) => void, drawerOnly?: boolean, onViewPackages?: () => void }) {
+export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premiumUnlocked = false, onUnlockPremium }: { onSelect?: (key: string) => void, drawerOnly?: boolean, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
   const { user, userType } = useAuth();
   const { language } = useLanguage();
   const t = TEXT[language];
@@ -68,19 +68,19 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages }: { o
           .filter((mod: any) => mod.key !== 'simulation')
           .map((mod: any, i: number) => {
             const isPremium = premiumModules.includes(mod.key);
-            const isUnlocked = !isPremium || true; // Demo: hepsi açık
+            const isUnlocked = !isPremium || premiumUnlocked;
             return (
               <button
                 key={mod.key}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition text-left relative ${!isUnlocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition text-left relative ${!isUnlocked ? 'opacity-60 cursor-pointer' : ''}`}
                 onClick={() => { 
-                  if (isPremium) {
-                    onViewPackages?.();
+                  if (isPremium && !premiumUnlocked) {
+                    onUnlockPremium?.();
+                    setTimeout(() => onSelect?.(mod.key), 0);
                   } else if (isUnlocked) {
                     onSelect?.(mod.key);
                   }
                 }}
-                disabled={!isUnlocked}
               >
                 <div>
                   <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
@@ -93,16 +93,10 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages }: { o
                   </div>
                   <div className="text-xs text-gray-500">{mod.desc}</div>
                 </div>
-                {!isUnlocked && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-red-500 font-bold flex items-center gap-1">
-                    <Lock className="w-4 h-4" /> Kilitli
-                  </span>
-                )}
               </button>
             );
           })}
         
-        {/* Paketler butonu */}
         <div className="mt-4 pt-4 border-t border-gray-200">
           <button
             onClick={onViewPackages}

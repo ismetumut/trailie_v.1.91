@@ -84,7 +84,11 @@ interface Filters {
   simulationScoreMax: number;
 }
 
-export function AdminPanel() {
+interface AdminPanelProps {
+  language?: 'tr' | 'en';
+}
+
+export function AdminPanel({ language = 'tr' }: AdminPanelProps) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(false);
@@ -344,52 +348,129 @@ export function AdminPanel() {
     console.log('Downloading CV for:', candidate.name);
   };
 
+  const t = {
+    tr: {
+      title: 'Şirket Yönetim Paneli',
+      subtitle: "Nitelikli adayları keşfedin ve CV'lerini inceleyin",
+      settings: 'Ayarlar',
+      upgrade: 'Paket Yükselt',
+      totalCandidates: 'Toplam Aday',
+      cvViews: 'CV Görüntüleme',
+      currentPlan: 'Mevcut Paket',
+      planPrice: 'Paket Ücreti',
+      monthly: 'Aylık',
+      annual: 'Yıllık',
+      searchFilter: 'Aday Arama ve Filtreleme',
+      searchPlaceholder: 'isim, rol veya beceri ile arama yapın...',
+      personalityType: 'Kişilik Tipi',
+      discColor: 'DISC Rengi',
+      skill: 'Beceri',
+      location: 'Konum',
+      experience: 'Deneyim',
+      all: 'Tümü',
+      advancedFilters: 'Gelişmiş Filtreler',
+      candidates: 'Adaylar',
+      results: 'sonuç',
+      viewCV: 'CV Görüntüle',
+      download: 'İndir',
+      assessment: 'Assessment',
+      aiInterview: 'AI Mülakat',
+      simulation: 'Simülasyon',
+      frontend: 'Frontend Development',
+      backend: 'Backend Development',
+      product: 'Product Management',
+      marketing: 'Marketing',
+      sales: 'Sales',
+      senior: 'Kıdemli',
+      manager: 'Yönetici',
+      filter: 'Filtrele',
+      clear: 'Temizle',
+    },
+    en: {
+      title: 'Company Admin Panel',
+      subtitle: 'Discover qualified candidates and review their CVs',
+      settings: 'Settings',
+      upgrade: 'Upgrade Plan',
+      totalCandidates: 'Total Candidates',
+      cvViews: 'CV Views',
+      currentPlan: 'Current Plan',
+      planPrice: 'Plan Price',
+      monthly: 'Monthly',
+      annual: 'Annual',
+      searchFilter: 'Candidate Search & Filter',
+      searchPlaceholder: 'search by name, role or skill...',
+      personalityType: 'Personality Type',
+      discColor: 'DISC Color',
+      skill: 'Skill',
+      location: 'Location',
+      experience: 'Experience',
+      all: 'All',
+      advancedFilters: 'Advanced Filters',
+      candidates: 'Candidates',
+      results: 'results',
+      viewCV: 'View CV',
+      download: 'Download',
+      assessment: 'Assessment',
+      aiInterview: 'AI Interview',
+      simulation: 'Simulation',
+      frontend: 'Frontend Development',
+      backend: 'Backend Development',
+      product: 'Product Management',
+      marketing: 'Marketing',
+      sales: 'Sales',
+      senior: 'Senior',
+      manager: 'Manager',
+      filter: 'Filter',
+      clear: 'Clear',
+    }
+  }[language];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-2 sm:p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Şirket Yönetim Paneli</h1>
-            <p className="text-gray-600">Nitelikli adayları keşfedin ve CV'lerini inceleyin</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{t.title}</h1>
+            <p className="text-gray-600 text-xs sm:text-sm md:text-base">{t.subtitle}</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 mt-2 md:mt-0 w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto">
               <Settings className="w-4 h-4 mr-2" />
-              Ayarlar
+              {t.settings}
             </Button>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Crown className="w-4 h-4 mr-2" />
-              Paket Yükselt
+              {t.upgrade}
             </Button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Toplam Aday</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalCandidates}</p>
+                  <p className="text-xs md:text-sm text-gray-600">{t.totalCandidates}</p>
+                  <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.totalCandidates}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Eye className="w-6 h-6 text-green-600" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Eye className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">CV Görüntüleme</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.viewsUsed}/{stats.viewsLimit}</p>
+                  <p className="text-xs md:text-sm text-gray-600">{t.cvViews}</p>
+                  <p className="text-xl md:text-2xl font-bold text-gray-900">{stats.viewsUsed}/{stats.viewsLimit}</p>
                 </div>
               </div>
             </CardContent>
@@ -402,9 +483,9 @@ export function AdminPanel() {
                   <TrendingUp className="w-6 h-6 text-purple-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Mevcut Paket</p>
+                  <p className="text-sm text-gray-600">{t.currentPlan}</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {stats.currentPlan === 'monthly' ? 'Aylık' : 'Yıllık'}
+                    {stats.currentPlan === 'monthly' ? t.monthly : t.annual}
                   </p>
                 </div>
               </div>
@@ -418,7 +499,7 @@ export function AdminPanel() {
                   <DollarSign className="w-6 h-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Paket Ücreti</p>
+                  <p className="text-sm text-gray-600">{t.planPrice}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {stats.currentPlan === 'monthly' ? '9.999₺' : '100.000₺'}
                   </p>
@@ -428,43 +509,42 @@ export function AdminPanel() {
           </Card>
         </div>
 
-        {/* Search and Filters */}
-        <Card>
+        {/* Filtreler ve arama */}
+        <Card className="overflow-x-auto">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Search className="w-5 h-5" />
-                <span>Aday Arama ve Filtreleme</span>
+            <CardTitle>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div className="flex items-center space-x-2">
+                  <Search className="w-5 h-5" />
+                  <span className="text-base sm:text-lg">{t.searchFilter}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto mt-2 sm:mt-0"
+                  onClick={() => setShowFilters((v) => !v)}
+                >
+                  <Filter className="w-4 h-4" />
+                  <span>{showFilters ? t.clear : t.advancedFilters}</span>
+                </Button>
               </div>
-              <Button
-                variant="outline"
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2"
-              >
-                <Filter className="w-4 h-4" />
-                <span>{showFilters ? 'Filtreleri Gizle' : 'Gelişmiş Filtreler'}</span>
-              </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Search Bar */}
-            <div className="relative">
+          <CardContent className="space-y-4">
+            <div className="relative mb-2">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
-                placeholder="İsim, rol veya beceri ile arama yapın..."
+                placeholder={t.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 h-12"
+                className="pl-10 pr-2 py-2 text-sm w-full"
               />
             </div>
-
-            {/* Basic Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4">
               <div className="space-y-2">
-                <Label>Kişilik Tipi</Label>
+                <Label>{t.personalityType}</Label>
                 <Select value={filters.personalityType} onValueChange={(value) => setFilters({...filters, personalityType: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tümü" />
+                    <SelectValue placeholder={t.all} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tümü</SelectItem>
@@ -489,10 +569,10 @@ export function AdminPanel() {
               </div>
 
               <div className="space-y-2">
-                <Label>DISC Rengi</Label>
+                <Label>{t.discColor}</Label>
                 <Select value={filters.discColor} onValueChange={(value) => setFilters({...filters, discColor: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tümü" />
+                    <SelectValue placeholder={t.all} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tümü</SelectItem>
@@ -505,7 +585,7 @@ export function AdminPanel() {
               </div>
 
               <div className="space-y-2">
-                <Label>Beceri</Label>
+                <Label>{t.skill}</Label>
                 <Input
                   placeholder="React, Python..."
                   value={filters.skills}
@@ -514,10 +594,10 @@ export function AdminPanel() {
               </div>
 
               <div className="space-y-2">
-                <Label>Konum</Label>
+                <Label>{t.location}</Label>
                 <Select value={filters.location} onValueChange={(value) => setFilters({...filters, location: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tümü" />
+                    <SelectValue placeholder={t.all} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tümü</SelectItem>
@@ -531,10 +611,10 @@ export function AdminPanel() {
               </div>
 
               <div className="space-y-2">
-                <Label>Deneyim</Label>
+                <Label>{t.experience}</Label>
                 <Select value={filters.experience} onValueChange={(value) => setFilters({...filters, experience: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tümü" />
+                    <SelectValue placeholder={t.all} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Tümü</SelectItem>
@@ -548,361 +628,248 @@ export function AdminPanel() {
               </div>
             </div>
 
-            {/* Advanced Filters */}
             {showFilters && (
-              <div className="border-t pt-6 space-y-6">
-                <h3 className="text-lg font-semibold text-gray-900">Gelişmiş Filtreler</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* DISC Score Range */}
-                  <div className="space-y-3">
-                    <Label>DISC Skor Aralığı</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.discScoreMin}
-                        onChange={(e) => setFilters({...filters, discScoreMin: parseInt(e.target.value) || 0})}
-                        className="w-20"
-                      />
-                      <span>-</span>
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.discScoreMax}
-                        onChange={(e) => setFilters({...filters, discScoreMax: parseInt(e.target.value) || 100})}
-                        className="w-20"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Expertise */}
-                  <div className="space-y-3">
-                    <Label>Uzmanlık Alanı</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-4 mt-2">
+                <div className="space-y-3">
+                  <Label>DISC Skor Aralığı</Label>
+                  <div className="flex items-center space-x-2">
                     <Input
-                      placeholder="Frontend, Marketing..."
-                      value={filters.expertise}
-                      onChange={(e) => setFilters({...filters, expertise: e.target.value})}
+                      type="number"
+                      placeholder="Min"
+                      value={filters.discScoreMin}
+                      onChange={(e) => setFilters({...filters, discScoreMin: parseInt(e.target.value) || 0})}
+                      className="w-20"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.discScoreMax}
+                      onChange={(e) => setFilters({...filters, discScoreMax: parseInt(e.target.value) || 100})}
+                      className="w-20"
                     />
                   </div>
+                </div>
 
-                  {/* Expertise Score Range */}
-                  <div className="space-y-3">
-                    <Label>Uzmanlık Skor Aralığı</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.expertiseScoreMin}
-                        onChange={(e) => setFilters({...filters, expertiseScoreMin: parseInt(e.target.value) || 0})}
-                        className="w-20"
-                      />
-                      <span>-</span>
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.expertiseScoreMax}
-                        onChange={(e) => setFilters({...filters, expertiseScoreMax: parseInt(e.target.value) || 100})}
-                        className="w-20"
-                      />
-                    </div>
+                <div className="space-y-3">
+                  <Label>Uzmanlık Alanı</Label>
+                  <Input
+                    placeholder="Frontend, Marketing..."
+                    value={filters.expertise}
+                    onChange={(e) => setFilters({...filters, expertise: e.target.value})}
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <Label>Uzmanlık Skor Aralığı</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.expertiseScoreMin}
+                      onChange={(e) => setFilters({...filters, expertiseScoreMin: parseInt(e.target.value) || 0})}
+                      className="w-20"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.expertiseScoreMax}
+                      onChange={(e) => setFilters({...filters, expertiseScoreMax: parseInt(e.target.value) || 100})}
+                      className="w-20"
+                    />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  {/* Assessment Score Range */}
-                  <div className="space-y-3">
-                    <Label>Assessment Skor Aralığı</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.assessmentScoreMin}
-                        onChange={(e) => setFilters({...filters, assessmentScoreMin: parseInt(e.target.value) || 0})}
-                        className="w-20"
-                      />
-                      <span>-</span>
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.assessmentScoreMax}
-                        onChange={(e) => setFilters({...filters, assessmentScoreMax: parseInt(e.target.value) || 100})}
-                        className="w-20"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Assessment Completed */}
-                  <div className="space-y-3">
-                    <Label>Assessment Durumu</Label>
-                    <Select value={filters.assessmentCompleted?.toString() || 'all'} onValueChange={(value) => setFilters({...filters, assessmentCompleted: value === 'all' ? null : value === 'true'})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Tümü" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        <SelectItem value="true">Tamamlandı</SelectItem>
-                        <SelectItem value="false">Tamamlanmadı</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* AI Interview Score Range */}
-                  <div className="space-y-3">
-                    <Label>AI Mülakat Skor Aralığı</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.aiInterviewScoreMin}
-                        onChange={(e) => setFilters({...filters, aiInterviewScoreMin: parseInt(e.target.value) || 0})}
-                        className="w-20"
-                      />
-                      <span>-</span>
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.aiInterviewScoreMax}
-                        onChange={(e) => setFilters({...filters, aiInterviewScoreMax: parseInt(e.target.value) || 100})}
-                        className="w-20"
-                      />
-                    </div>
-                  </div>
-
-                  {/* AI Interview Completed */}
-                  <div className="space-y-3">
-                    <Label>AI Mülakat Durumu</Label>
-                    <Select value={filters.aiInterviewCompleted?.toString() || 'all'} onValueChange={(value) => setFilters({...filters, aiInterviewCompleted: value === 'all' ? null : value === 'true'})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Tümü" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Tümü</SelectItem>
-                        <SelectItem value="true">Tamamlandı</SelectItem>
-                        <SelectItem value="false">Tamamlanmadı</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="space-y-3">
+                  <Label>Assessment Skor Aralığı</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.assessmentScoreMin}
+                      onChange={(e) => setFilters({...filters, assessmentScoreMin: parseInt(e.target.value) || 0})}
+                      className="w-20"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.assessmentScoreMax}
+                      onChange={(e) => setFilters({...filters, assessmentScoreMax: parseInt(e.target.value) || 100})}
+                      className="w-20"
+                    />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Simulation Score Range */}
-                  <div className="space-y-3">
-                    <Label>Simülasyon Skor Aralığı</Label>
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.simulationScoreMin}
-                        onChange={(e) => setFilters({...filters, simulationScoreMin: parseInt(e.target.value) || 0})}
-                        className="w-20"
-                      />
-                      <span>-</span>
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.simulationScoreMax}
-                        onChange={(e) => setFilters({...filters, simulationScoreMax: parseInt(e.target.value) || 100})}
-                        className="w-20"
-                      />
-                    </div>
-                  </div>
+                <div className="space-y-3">
+                  <Label>Assessment Durumu</Label>
+                  <Select value={filters.assessmentCompleted?.toString() || 'all'} onValueChange={(value) => setFilters({...filters, assessmentCompleted: value === 'all' ? null : value === 'true'})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tümü" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tümü</SelectItem>
+                      <SelectItem value="true">Tamamlandı</SelectItem>
+                      <SelectItem value="false">Tamamlanmadı</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  {/* Clear Filters Button */}
-                  <div className="flex items-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => setFilters({
-                        personalityType: '',
-                        discColor: '',
-                        discScoreMin: 0,
-                        discScoreMax: 100,
-                        skills: '',
-                        expertise: '',
-                        expertiseScoreMin: 0,
-                        expertiseScoreMax: 100,
-                        location: '',
-                        role: '',
-                        experience: '',
-                        assessmentScoreMin: 0,
-                        assessmentScoreMax: 100,
-                        assessmentCompleted: null,
-                        aiInterviewScoreMin: 0,
-                        aiInterviewScoreMax: 100,
-                        aiInterviewCompleted: null,
-                        simulationScoreMin: 0,
-                        simulationScoreMax: 100
-                      })}
-                      className="w-full"
-                    >
-                      Filtreleri Temizle
-                    </Button>
+                <div className="space-y-3">
+                  <Label>AI Mülakat Skor Aralığı</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.aiInterviewScoreMin}
+                      onChange={(e) => setFilters({...filters, aiInterviewScoreMin: parseInt(e.target.value) || 0})}
+                      className="w-20"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.aiInterviewScoreMax}
+                      onChange={(e) => setFilters({...filters, aiInterviewScoreMax: parseInt(e.target.value) || 100})}
+                      className="w-20"
+                    />
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <Label>AI Mülakat Durumu</Label>
+                  <Select value={filters.aiInterviewCompleted?.toString() || 'all'} onValueChange={(value) => setFilters({...filters, aiInterviewCompleted: value === 'all' ? null : value === 'true'})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Tümü" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Tümü</SelectItem>
+                      <SelectItem value="true">Tamamlandı</SelectItem>
+                      <SelectItem value="false">Tamamlanmadı</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-3">
+                  <Label>Simülasyon Skor Aralığı</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={filters.simulationScoreMin}
+                      onChange={(e) => setFilters({...filters, simulationScoreMin: parseInt(e.target.value) || 0})}
+                      className="w-20"
+                    />
+                    <span>-</span>
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={filters.simulationScoreMax}
+                      onChange={(e) => setFilters({...filters, simulationScoreMax: parseInt(e.target.value) || 100})}
+                      className="w-20"
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 sm:mt-0"
+                  onClick={() => setFilters({
+                    personalityType: '',
+                    discColor: '',
+                    discScoreMin: 0,
+                    discScoreMax: 100,
+                    skills: '',
+                    expertise: '',
+                    expertiseScoreMin: 0,
+                    expertiseScoreMax: 100,
+                    location: '',
+                    role: '',
+                    experience: '',
+                    assessmentScoreMin: 0,
+                    assessmentScoreMax: 100,
+                    assessmentCompleted: null,
+                    aiInterviewScoreMin: 0,
+                    aiInterviewScoreMax: 100,
+                    aiInterviewCompleted: null,
+                    simulationScoreMin: 0,
+                    simulationScoreMax: 100
+                  })}
+                >
+                  {t.clear}
+                </Button>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Results */}
-        <Card>
+        {/* Aday Listesi */}
+        <Card className="overflow-x-auto">
           <CardHeader>
             <CardTitle>
-              Adaylar ({filteredCandidates.length} sonuç)
+              <span className="text-base sm:text-lg">{t.candidates} ({filteredCandidates.length} {t.results})</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredCandidates.map((candidate) => (
-                <div key={candidate.id} className="border rounded-lg p-6 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <Avatar className="w-16 h-16">
-                        <AvatarImage src={candidate.avatar} />
-                        <AvatarFallback>{candidate.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      
-                      <div className="space-y-2">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900">{candidate.name}</h3>
-                          <p className="text-gray-600">{candidate.email}</p>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
-                          <div className="flex items-center space-x-1">
-                            <MapPin className="w-4 h-4" />
-                            <span>{candidate.location}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="w-4 h-4" />
-                            <span>{candidate.experience}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Building2 className="w-4 h-4" />
-                            <span>{candidate.education}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="secondary">{candidate.personalityType}</Badge>
-                            <Badge 
-                              variant="outline" 
-                              className={`${
-                                candidate.discColor === 'red' ? 'border-red-300 text-red-700 bg-red-50' :
-                                candidate.discColor === 'yellow' ? 'border-yellow-300 text-yellow-700 bg-yellow-50' :
-                                candidate.discColor === 'green' ? 'border-green-300 text-green-700 bg-green-50' :
-                                'border-blue-300 text-blue-700 bg-blue-50'
-                              }`}
-                            >
-                              DISC: {candidate.discScore}/100
-                            </Badge>
-                            <Badge variant="outline">{candidate.suggestedRole}</Badge>
-                          </div>
-                          
-                          {/* Expertise and Scores */}
-                          <div className="flex items-center space-x-2">
-                            <Badge variant="default" className="bg-purple-100 text-purple-700 border-purple-200">
-                              Uzmanlık: {candidate.expertiseScore}/100
-                            </Badge>
-                            {candidate.assessmentScore && (
-                              <Badge variant="default" className="bg-green-100 text-green-700 border-green-200">
-                                Assessment: {candidate.assessmentScore}/100
-                              </Badge>
-                            )}
-                            {candidate.aiInterviewScore && (
-                              <Badge variant="default" className="bg-blue-100 text-blue-700 border-blue-200">
-                                AI Mülakat: {candidate.aiInterviewScore}/100
-                              </Badge>
-                            )}
-                            {candidate.simulationScore && (
-                              <Badge variant="default" className="flex items-center space-x-1 bg-orange-100 text-orange-700 border-orange-200">
-                                <Star className="w-3 h-3" />
-                                <span>Simülasyon: {candidate.simulationScore}/100</span>
-                              </Badge>
-                            )}
-                          </div>
-                          
-                          {/* Expertise Areas */}
-                          <div className="flex flex-wrap gap-2">
-                            {candidate.expertise.map((exp, index) => (
-                              <Badge key={index} variant="outline" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-200">
-                                {exp}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-2">
-                            {candidate.skills.slice(0, 4).map((skill, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
-                                {skill}
-                              </Badge>
-                            ))}
-                            {candidate.skills.length > 4 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{candidate.skills.length - 4} daha
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
+          <CardContent className="space-y-4">
+            {filteredCandidates.map((candidate) => (
+              <div key={candidate.id} className="flex flex-col gap-2 p-2 border-b last:border-b-0 bg-white rounded-xl shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div className="flex flex-row items-start gap-3 w-full">
+                    <Avatar className="w-14 h-14 min-w-[56px]">
+                      <AvatarImage src={candidate.avatar} alt={candidate.name} />
+                      <AvatarFallback>{candidate.name[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-lg break-words">{candidate.name}</div>
+                      <div className="text-gray-500 text-sm break-all">{candidate.email}</div>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500 mt-1">
+                        <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{candidate.location}</span>
+                        <span className="flex items-center gap-1"><Calendar className="w-4 h-4" />{candidate.experience}</span>
+                        <span className="flex items-center gap-1"><GraduationCap className="w-4 h-4" />{candidate.education}</span>
                       </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleViewCV(candidate)}
-                        className="flex items-center space-x-1"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span>CV Görüntüle</span>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDownloadCV(candidate)}
-                        className="flex items-center space-x-1"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>İndir</span>
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  {/* Completion Status */}
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex items-center space-x-1">
-                          <div className={`w-2 h-2 rounded-full ${candidate.assessmentCompleted ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                          <span>Assessment {candidate.assessmentCompleted ? '✓' : '○'}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <div className={`w-2 h-2 rounded-full ${candidate.aiInterviewCompleted ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                          <span>AI Mülakat {candidate.aiInterviewCompleted ? '✓' : '○'}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <div className={`w-2 h-2 rounded-full ${candidate.simulationScore ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                          <span>Simülasyon {candidate.simulationScore ? '✓' : '○'}</span>
-                        </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <Badge variant="secondary" className="text-xs">{candidate.personalityType}</Badge>
+                        <Badge variant="destructive" className="text-xs">DISC: {candidate.discScore}/100</Badge>
+                        <Badge variant="default" className="text-xs">{candidate.suggestedRole}</Badge>
                       </div>
-                      <div className="text-xs">
-                        Son aktif: {isClient ? new Date(candidate.lastActive).toLocaleDateString('tr-TR') : candidate.lastActive}
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <Badge variant="default" className="bg-purple-100 text-purple-700 border-purple-200 text-xs">Uzmanlık: {candidate.expertiseScore}/100</Badge>
+                        {candidate.assessmentScore && (
+                          <Badge variant="default" className="bg-green-100 text-green-700 border-green-200 text-xs">Assessment: {candidate.assessmentScore}/100</Badge>
+                        )}
+                        {candidate.aiInterviewScore && (
+                          <Badge variant="default" className="bg-blue-100 text-blue-700 border-blue-200 text-xs">AI Interview: {candidate.aiInterviewScore}/100</Badge>
+                        )}
+                        {candidate.simulationScore && (
+                          <Badge variant="default" className="flex items-center space-x-1 bg-orange-100 text-orange-700 border-orange-200 text-xs"><Star className="w-3 h-3" /><span>Simulation: {candidate.simulationScore}/100</span></Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {candidate.expertise.map((exp, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">{exp}</Badge>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {candidate.skills.map((skill, i) => (
+                          <Badge key={i} variant="outline" className="text-xs">{skill}</Badge>
+                        ))}
                       </div>
                     </div>
                   </div>
+                  <div className="flex flex-col gap-2 w-full sm:w-auto sm:items-end mt-2 sm:mt-0">
+                    <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      <span>{t.viewCV}</span>
+                    </Button>
+                    <Button variant="outline" className="w-full sm:w-auto flex items-center justify-center gap-2">
+                      <Download className="w-4 h-4" />
+                      <span>{t.download}</span>
+                    </Button>
+                  </div>
                 </div>
-              ))}
-              
-              {filteredCandidates.length === 0 && (
-                <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aday bulunamadı</h3>
-                  <p className="text-gray-600">Arama kriterlerinizi değiştirerek tekrar deneyin.</p>
-                </div>
-              )}
-            </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
