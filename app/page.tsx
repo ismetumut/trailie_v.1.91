@@ -200,213 +200,372 @@ const EXPERTISE_REPORT = {
   }
 };
 
-// DISC Questions (EN)
-const discQuestionsEN = [
-    {
-      id: 1,
-    text: "Your approach in the workplace:",
-      options: [
-      { text: "I focus on goals and get things done quickly.", type: "D" as const },
-      { text: "I facilitate the process with relationships.", type: "I" as const },
-      { text: "I provide balance and support in the team.", type: "S" as const },
-      { text: "I follow rules and pay attention to details.", type: "C" as const }
-    ]
-    },
-    {
-      id: 2,
-    text: "What is your first step when starting a new project?",
-      options: [
-      { text: "Set priorities and get started.", type: "D" as const },
-      { text: "Boost the team's motivation.", type: "I" as const },
-      { text: "Help everyone adapt to the process.", type: "S" as const },
-      { text: "Start with planning and analysis.", type: "C" as const }
-    ]
-    },
-    {
-      id: 3,
-    text: "How do you behave under stress?",
+// 36 soruluk DISC kişilik envanteri
+const discQuestionsTR = [
+  {
+    id: 1,
+    text: { tr: "Yeni bir projeye başlarken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when starting a new project?" },
     options: [
-      { text: "Take control.", type: "D" as const },
-      { text: "Try to create a relaxed atmosphere.", type: "I" as const },
-      { text: "Stay calm and understanding.", type: "S" as const },
-      { text: "Find solutions by following rules.", type: "C" as const }
+      { text: { tr: "Hedefe hızlıca ulaşmak isterim.", en: "I want to reach the goal quickly." }, tag: 'D' as const },
+      { text: { tr: "Takımın motivasyonunu artırırım.", en: "I increase the team's motivation." }, tag: 'I' as const },
+      { text: { tr: "Düzenli ve planlı ilerlerim.", en: "I proceed in an organized and planned way." }, tag: 'C' as const },
+      { text: { tr: "Uyumlu ve destekleyici olurum.", en: "I am cooperative and supportive." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 2,
+    text: { tr: "Bir ekip çalışmasında seni en çok ve en az tanımlayan özellik hangisi?", en: "Which of the following best and least describes you in teamwork?" },
+    options: [
+      { text: { tr: "Liderliği üstlenirim.", en: "I take the lead." }, tag: 'D' as const },
+      { text: { tr: "Takımın moralini yüksek tutarım.", en: "I keep the team's morale high." }, tag: 'I' as const },
+      { text: { tr: "Kurallara ve plana sadık kalırım.", en: "I stick to rules and plans." }, tag: 'C' as const },
+      { text: { tr: "Destekleyici ve sabırlı olurum.", en: "I am supportive and patient." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 3,
+    text: { tr: "Bir sorunla karşılaştığında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when facing a problem?" },
+    options: [
+      { text: { tr: "Hızlıca çözüm üretirim.", en: "I quickly produce a solution." }, tag: 'D' as const },
+      { text: { tr: "Başkalarını motive ederim.", en: "I motivate others." }, tag: 'I' as const },
+      { text: { tr: "Detaylı analiz yaparım.", en: "I analyze details thoroughly." }, tag: 'C' as const },
+      { text: { tr: "Süreci sabırla takip ederim.", en: "I patiently follow the process." }, tag: 'S' as const }
     ]
   },
   {
     id: 4,
-    text: "Your role in a team:",
+    text: { tr: "Bir hedef belirlerken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when setting a goal?" },
     options: [
-      { text: "Leader", type: "D" as const },
-      { text: "Communicator", type: "I" as const },
-      { text: "Supporter", type: "S" as const },
-      { text: "Organizer", type: "C" as const }
+      { text: { tr: "Net ve iddialı hedefler koyarım.", en: "I set clear and ambitious goals." }, tag: 'D' as const },
+      { text: { tr: "Takımın fikrini alırım.", en: "I get the team's opinion." }, tag: 'S' as const },
+      { text: { tr: "Herkesi motive ederim.", en: "I motivate everyone." }, tag: 'I' as const },
+      { text: { tr: "Gerçekçi ve ölçülebilir hedefler koyarım.", en: "I set realistic and measurable goals." }, tag: 'C' as const }
     ]
   },
   {
     id: 5,
-    text: "Which achievement makes you happiest?",
-      options: [
-      { text: "Achieving a tough goal", type: "D" as const },
-      { text: "Being recognized by people", type: "I" as const },
-      { text: "Gaining the team's trust", type: "S" as const },
-      { text: "Doing flawless and proper work", type: "C" as const }
+    text: { tr: "Bir sunum yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when presenting?" },
+    options: [
+      { text: { tr: "Etkileyici ve enerjik olurum.", en: "I am impressive and energetic." }, tag: 'I' as const },
+      { text: { tr: "Hazırlıklı ve düzenli olurum.", en: "I am prepared and organized." }, tag: 'C' as const },
+      { text: { tr: "Kısa ve net konuşurum.", en: "I speak briefly and clearly." }, tag: 'D' as const },
+      { text: { tr: "Dinleyicilere yakın olurum.", en: "I am close to the audience." }, tag: 'S' as const }
     ]
   },
   {
     id: 6,
-    text: "In which environment do you work most efficiently?",
+    text: { tr: "Bir karar verirken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when making a decision?" },
     options: [
-      { text: "Under pressure", type: "D" as const },
-      { text: "In social environments", type: "I" as const },
-      { text: "In peaceful, stable places", type: "S" as const },
-      { text: "In systematic and organized places", type: "C" as const }
+      { text: { tr: "Hızlıca karar veririm.", en: "I make quick decisions." }, tag: 'D' as const },
+      { text: { tr: "Başkalarının fikrini alırım.", en: "I get others' opinions." }, tag: 'I' as const },
+      { text: { tr: "Detaylı analiz yaparım.", en: "I do detailed analysis." }, tag: 'C' as const },
+      { text: { tr: "Düşünceli ve sabırlı olurum.", en: "I am thoughtful and patient." }, tag: 'S' as const }
     ]
   },
   {
     id: 7,
-    text: "How do people describe you?",
+    text: { tr: "Bir projede rol alırken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes your role in a project?" },
     options: [
-      { text: "Decisive", type: "D" as const },
-      { text: "Energetic", type: "I" as const },
-      { text: "Understanding", type: "S" as const },
-      { text: "Careful", type: "C" as const }
+      { text: { tr: "Liderlik yapmayı severim.", en: "I like to lead." }, tag: 'D' as const },
+      { text: { tr: "Takımın moralini yüksek tutarım.", en: "I keep the team's morale high." }, tag: 'I' as const },
+      { text: { tr: "Dengeli ve destekleyici olurum.", en: "I am balanced and supportive." }, tag: 'S' as const },
+      { text: { tr: "Kurallara ve plana sadık kalırım.", en: "I stick to rules and plans." }, tag: 'C' as const }
     ]
   },
   {
     id: 8,
-    text: "How do you feel when meeting new people?",
+    text: { tr: "Stresli bir durumda hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you under stress?" },
     options: [
-      { text: "Want to make a strong impression", type: "D" as const },
-      { text: "Easily communicate", type: "I" as const },
-      { text: "Prefer to listen first", type: "S" as const },
-      { text: "Observe from a distance", type: "C" as const }
+      { text: { tr: "Kontrolü ele alırım.", en: "I take control." }, tag: 'D' as const },
+      { text: { tr: "Sakinliğimi korurum.", en: "I remain calm." }, tag: 'S' as const },
+      { text: { tr: "Çözüm için kurallara başvururum.", en: "I refer to rules for solutions." }, tag: 'C' as const },
+      { text: { tr: "Pozitif bir atmosfer yaratmaya çalışırım.", en: "I try to create a positive atmosphere." }, tag: 'I' as const }
     ]
   },
   {
     id: 9,
-    text: "What is your strongest trait?",
+    text: { tr: "Bir ekipte seni en çok ve en az tanımlayan özellik hangisi?", en: "Which of the following best and least describes you in a team?" },
     options: [
-      { text: "Leadership", type: "D" as const },
-      { text: "Social harmony", type: "I" as const },
-      { text: "Loyalty", type: "S" as const },
-      { text: "Discipline", type: "C" as const }
+      { text: { tr: "İletişim kurmayı kolaylaştırırım.", en: "I facilitate communication." }, tag: 'I' as const },
+      { text: { tr: "Destekleyici ve sadığım.", en: "I am supportive and loyal." }, tag: 'S' as const },
+      { text: { tr: "Hedefe odaklanırım.", en: "I focus on the goal." }, tag: 'D' as const },
+      { text: { tr: "Detaylara dikkat ederim.", en: "I pay attention to details." }, tag: 'C' as const }
     ]
   },
   {
     id: 10,
-    text: "Which principle do you value most?",
+    text: { tr: "Bir işte başarıya ulaşmak için hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes your way to success?" },
     options: [
-      { text: "Getting results", type: "D" as const },
-      { text: "Freedom", type: "I" as const },
-      { text: "Loyalty", type: "S" as const },
-      { text: "Truth", type: "C" as const }
+      { text: { tr: "Yaratıcı fikirler üretirim.", en: "I generate creative ideas." }, tag: 'I' as const },
+      { text: { tr: "Planlı ve düzenli ilerlerim.", en: "I proceed in a planned and organized way." }, tag: 'C' as const },
+      { text: { tr: "Kararlı ve hızlı hareket ederim.", en: "I act decisively and quickly." }, tag: 'D' as const },
+      { text: { tr: "Takımın desteğini önemserim.", en: "I value team support." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 11,
+    text: { tr: "Bir problemi çözerken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when solving a problem?" },
+    options: [
+      { text: { tr: "Hızlıca çözüm bulurum.", en: "I quickly find a solution." }, tag: 'D' as const },
+      { text: { tr: "Başkalarını motive ederim.", en: "I motivate others." }, tag: 'I' as const },
+      { text: { tr: "Süreci sabırla takip ederim.", en: "I patiently follow the process." }, tag: 'S' as const },
+      { text: { tr: "Detaylı analiz yaparım.", en: "I analyze details thoroughly." }, tag: 'C' as const }
+    ]
+  },
+  {
+    id: 12,
+    text: { tr: "Bir ekip çalışmasında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you in teamwork?" },
+    options: [
+      { text: { tr: "İnsanları bir araya getiririm.", en: "I bring people together." }, tag: 'I' as const },
+      { text: { tr: "Kurallara uyarım.", en: "I follow the rules." }, tag: 'C' as const },
+      { text: { tr: "Hedefe ulaşmak için yönlendiririm.", en: "I direct towards the goal." }, tag: 'D' as const },
+      { text: { tr: "Destekleyici olurum.", en: "I am supportive." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 13,
+    text: { tr: "Bir değişiklik olduğunda hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when there is a change?" },
+    options: [
+      { text: { tr: "Hızlıca uyum sağlarım.", en: "I adapt quickly." }, tag: 'D' as const },
+      { text: { tr: "Düzeni korumaya çalışırım.", en: "I try to maintain order." }, tag: 'S' as const },
+      { text: { tr: "Yaratıcı çözümler üretirim.", en: "I create creative solutions." }, tag: 'I' as const },
+      { text: { tr: "Kuralları gözden geçiririm.", en: "I review the rules." }, tag: 'C' as const }
+    ]
+  },
+  {
+    id: 14,
+    text: { tr: "Bir hedef belirlerken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when setting a goal?" },
+    options: [
+      { text: { tr: "Net ve iddialı hedefler koyarım.", en: "I set clear and ambitious goals." }, tag: 'D' as const },
+      { text: { tr: "Takımın fikrini alırım.", en: "I get the team's opinion." }, tag: 'S' as const },
+      { text: { tr: "Herkesi motive ederim.", en: "I motivate everyone." }, tag: 'I' as const },
+      { text: { tr: "Gerçekçi ve ölçülebilir hedefler koyarım.", en: "I set realistic and measurable goals." }, tag: 'C' as const }
+    ]
+  },
+  {
+    id: 15,
+    text: { tr: "Bir sunum yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when presenting?" },
+    options: [
+      { text: { tr: "Etkileyici ve enerjik olurum.", en: "I am impressive and energetic." }, tag: 'I' as const },
+      { text: { tr: "Hazırlıklı ve düzenli olurum.", en: "I am prepared and organized." }, tag: 'C' as const },
+      { text: { tr: "Kısa ve net konuşurum.", en: "I speak briefly and clearly." }, tag: 'D' as const },
+      { text: { tr: "Dinleyicilere yakın olurum.", en: "I am close to the audience." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 16,
+    text: { tr: "Bir hata yaptığında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when you make a mistake?" },
+    options: [
+      { text: { tr: "Hemen çözüm bulurum.", en: "I immediately find a solution." }, tag: 'D' as const },
+      { text: { tr: "Durumu analiz ederim.", en: "I analyze the situation." }, tag: 'C' as const },
+      { text: { tr: "Destek isterim.", en: "I ask for support." }, tag: 'S' as const },
+      { text: { tr: "Mizah ile yaklaşırım.", en: "I approach with humor." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 17,
+    text: { tr: "Bir projede sorumluluk alırken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when taking responsibility?" },
+    options: [
+      { text: { tr: "Liderliği üstlenirim.", en: "I take the lead." }, tag: 'D' as const },
+      { text: { tr: "Kurallara uyarım.", en: "I follow the rules." }, tag: 'C' as const },
+      { text: { tr: "Takımın motivasyonunu artırırım.", en: "I increase the team's motivation." }, tag: 'I' as const },
+      { text: { tr: "İstikrarlı ve güvenilir olurum.", en: "I am consistent and reliable." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 18,
+    text: { tr: "Bir tartışmada hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you in a discussion?" },
+    options: [
+      { text: { tr: "Net ve kararlı olurum.", en: "I am clear and determined." }, tag: 'D' as const },
+      { text: { tr: "Ortamı yumuşatırım.", en: "I soften the atmosphere." }, tag: 'I' as const },
+      { text: { tr: "Kurallara ve mantığa dayanırım.", en: "I rely on rules and logic." }, tag: 'C' as const },
+      { text: { tr: "Sakin ve anlayışlı olurum.", en: "I am calm and understanding." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 19,
+    text: { tr: "Bir yenilik olduğunda hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when there is innovation?" },
+    options: [
+      { text: { tr: "Hemen denerim.", en: "I try it immediately." }, tag: 'D' as const },
+      { text: { tr: "Yaratıcı fikirler üretirim.", en: "I generate creative ideas." }, tag: 'I' as const },
+      { text: { tr: "Düzenli ve planlı uygularım.", en: "I apply it in an organized and planned way." }, tag: 'C' as const },
+      { text: { tr: "Değişime uyum sağlarım.", en: "I adapt to change." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 20,
+    text: { tr: "Bir iş paylaşımında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you in task sharing?" },
+    options: [
+      { text: { tr: "Görevleri hızlıca üstlenirim.", en: "I quickly take on tasks." }, tag: 'D' as const },
+      { text: { tr: "Takım arkadaşlarını motive ederim.", en: "I motivate teammates." }, tag: 'I' as const },
+      { text: { tr: "Dengeli ve adil davranırım.", en: "I act balanced and fair." }, tag: 'S' as const },
+      { text: { tr: "Görevleri planlar ve takip ederim.", en: "I plan and track tasks." }, tag: 'C' as const }
+    ]
+  },
+  {
+    id: 21,
+    text: { tr: "Bir başarı elde ettiğinde hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when you achieve success?" },
+    options: [
+      { text: { tr: "Yeni hedefler koyarım.", en: "I set new goals." }, tag: 'D' as const },
+      { text: { tr: "Takımı kutlarım.", en: "I celebrate with the team." }, tag: 'I' as const },
+      { text: { tr: "Süreci analiz ederim.", en: "I analyze the process." }, tag: 'C' as const },
+      { text: { tr: "İstikrarı sürdürmeye çalışırım.", en: "I try to maintain stability." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 22,
+    text: { tr: "Bir kriz anında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you in a crisis?" },
+    options: [
+      { text: { tr: "Hızlıca karar veririm.", en: "I make quick decisions." }, tag: 'D' as const },
+      { text: { tr: "Kurallara sadık kalırım.", en: "I stick to the rules." }, tag: 'C' as const },
+      { text: { tr: "Takımı sakinleştiririm.", en: "I calm the team." }, tag: 'S' as const },
+      { text: { tr: "Motive edici konuşmalar yaparım.", en: "I give motivational speeches." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 23,
+    text: { tr: "Bir iş planı yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when planning work?" },
+    options: [
+      { text: { tr: "Detaylı ve sistemli plan yaparım.", en: "I make detailed and systematic plans." }, tag: 'C' as const },
+      { text: { tr: "Hedefe ulaşmak için net adımlar belirlerim.", en: "I set clear steps to reach the goal." }, tag: 'D' as const },
+      { text: { tr: "Takımın görüşünü alırım.", en: "I get the team's opinion." }, tag: 'S' as const },
+      { text: { tr: "Yaratıcı fikirler eklerim.", en: "I add creative ideas." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 24,
+    text: { tr: "Bir işte motivasyonun düştüğünde hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when your motivation drops?" },
+    options: [
+      { text: { tr: "Kendime yeni hedefler koyarım.", en: "I set new goals for myself." }, tag: 'D' as const },
+      { text: { tr: "Takım arkadaşlarımla konuşurum.", en: "I talk to my teammates." }, tag: 'I' as const },
+      { text: { tr: "Süreci analiz ederim.", en: "I analyze the process." }, tag: 'C' as const },
+      { text: { tr: "Destek isterim.", en: "I ask for support." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 25,
+    text: { tr: "Bir işte sorumluluk paylaşırken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when sharing responsibility?" },
+    options: [
+      { text: { tr: "Görevleri adil dağıtırım.", en: "I distribute tasks fairly." }, tag: 'S' as const },
+      { text: { tr: "Hedefe ulaşmak için yönlendiririm.", en: "I direct towards the goal." }, tag: 'D' as const },
+      { text: { tr: "Kurallara uygun hareket ederim.", en: "I act according to the rules." }, tag: 'C' as const },
+      { text: { tr: "Takımın motivasyonunu artırırım.", en: "I increase the team's motivation." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 26,
+    text: { tr: "Bir işte yenilik yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when innovating?" },
+    options: [
+      { text: { tr: "Yaratıcı fikirler üretirim.", en: "I generate creative ideas." }, tag: 'I' as const },
+      { text: { tr: "Planlı ve sistemli ilerlerim.", en: "I proceed in a planned and systematic way." }, tag: 'C' as const },
+      { text: { tr: "Hızlıca uygularım.", en: "I implement quickly." }, tag: 'D' as const },
+      { text: { tr: "Takımın desteğini önemserim.", en: "I value team support." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 27,
+    text: { tr: "Bir işte hata yaptığında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when you make a mistake at work?" },
+    options: [
+      { text: { tr: "Çözüm odaklı olurum.", en: "I am solution-oriented." }, tag: 'D' as const },
+      { text: { tr: "Destek isterim.", en: "I ask for support." }, tag: 'S' as const },
+      { text: { tr: "Kuralları gözden geçiririm.", en: "I review the rules." }, tag: 'C' as const },
+      { text: { tr: "Pozitif yaklaşırım.", en: "I approach positively." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 28,
+    text: { tr: "Bir işte başarıya ulaşmak için hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you to achieve success at work?" },
+    options: [
+      { text: { tr: "Net hedefler koyarım.", en: "I set clear goals." }, tag: 'D' as const },
+      { text: { tr: "Takımın desteğini önemserim.", en: "I value team support." }, tag: 'S' as const },
+      { text: { tr: "Kurallara uyarım.", en: "I follow the rules." }, tag: 'C' as const },
+      { text: { tr: "Yaratıcı fikirler üretirim.", en: "I generate creative ideas." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 29,
+    text: { tr: "Bir işte planlama yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when planning at work?" },
+    options: [
+      { text: { tr: "Detaylı ve sistemli plan yaparım.", en: "I make detailed and systematic plans." }, tag: 'C' as const },
+      { text: { tr: "Hedefe ulaşmak için net adımlar belirlerim.", en: "I set clear steps to reach the goal." }, tag: 'D' as const },
+      { text: { tr: "Takımın görüşünü alırım.", en: "I get the team's opinion." }, tag: 'S' as const },
+      { text: { tr: "Yaratıcı fikirler eklerim.", en: "I add creative ideas." }, tag: 'I' as const }
+    ]
+  },
+  {
+    id: 30,
+    text: { tr: "Bir işte motivasyonun düştüğünde hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when your motivation drops at work?" },
+    options: [
+      { text: { tr: "Kendime yeni hedefler koyarım.", en: "I set new goals for myself." }, tag: 'D' as const },
+      { text: { tr: "Takım arkadaşlarımla konuşurum.", en: "I talk to my teammates." }, tag: 'I' as const },
+      { text: { tr: "Süreci analiz ederim.", en: "I analyze the process." }, tag: 'C' as const },
+      { text: { tr: "Destek isterim.", en: "I ask for support." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 31,
+    text: { tr: "Yoğun baskı altında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you under heavy pressure?" },
+    options: [
+      { text: { tr: "Hızlıca karar veririm.", en: "I make quick decisions." }, tag: 'D' as const },
+      { text: { tr: "Pozitif kalmaya çalışırım.", en: "I try to stay positive." }, tag: 'I' as const },
+      { text: { tr: "Kurallara daha çok uyarım.", en: "I stick to the rules more." }, tag: 'C' as const },
+      { text: { tr: "Sakinliğimi korurum.", en: "I remain calm." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 32,
+    text: { tr: "Bir işte ekipten ayrılmak zorunda kalsan hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you if you had to leave a team?" },
+    options: [
+      { text: { tr: "Yeni hedeflere odaklanırım.", en: "I focus on new goals." }, tag: 'D' as const },
+      { text: { tr: "İletişimi sürdürmeye çalışırım.", en: "I try to maintain communication." }, tag: 'I' as const },
+      { text: { tr: "Düzeni ve sistemi devrederim.", en: "I hand over order and system." }, tag: 'C' as const },
+      { text: { tr: "Destek olmaya devam ederim.", en: "I continue to be supportive." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 33,
+    text: { tr: "Bir işte yeni bir yöntem denenecekse hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when a new method is tried at work?" },
+    options: [
+      { text: { tr: "Hemen uygularım.", en: "I implement it immediately." }, tag: 'D' as const },
+      { text: { tr: "Yaratıcı fikirler eklerim.", en: "I add creative ideas." }, tag: 'I' as const },
+      { text: { tr: "Kurallara uygunluğunu kontrol ederim.", en: "I check for compliance with rules." }, tag: 'C' as const },
+      { text: { tr: "Takımın alışmasını sağlarım.", en: "I help the team adapt." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 34,
+    text: { tr: "Bir işte çatışma çıktığında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when there is conflict at work?" },
+    options: [
+      { text: { tr: "Sorunu doğrudan çözerim.", en: "I solve the problem directly." }, tag: 'D' as const },
+      { text: { tr: "Ortamı yumuşatırım.", en: "I soften the atmosphere." }, tag: 'I' as const },
+      { text: { tr: "Kurallara başvururum.", en: "I refer to the rules." }, tag: 'C' as const },
+      { text: { tr: "Herkesi sakinleştiririm.", en: "I calm everyone down." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 35,
+    text: { tr: "Bir işte uzun vadeli plan yaparken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when making long-term plans at work?" },
+    options: [
+      { text: { tr: "Hedefleri netleştiririm.", en: "I clarify the goals." }, tag: 'D' as const },
+      { text: { tr: "Takımın motivasyonunu yüksek tutarım.", en: "I keep the team's motivation high." }, tag: 'I' as const },
+      { text: { tr: "Detaylı ve sistemli plan yaparım.", en: "I make detailed and systematic plans." }, tag: 'C' as const },
+      { text: { tr: "İstikrarı ve sürekliliği gözetirim.", en: "I ensure stability and continuity." }, tag: 'S' as const }
+    ]
+  },
+  {
+    id: 36,
+    text: { tr: "Bir işte sonuca ulaşmak için hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you to achieve results at work?" },
+    options: [
+      { text: { tr: "Hızlı ve kararlı hareket ederim.", en: "I act quickly and decisively." }, tag: 'D' as const },
+      { text: { tr: "Takımın desteğini önemserim.", en: "I value team support." }, tag: 'S' as const },
+      { text: { tr: "Kurallara ve plana sadık kalırım.", en: "I stick to rules and plans." }, tag: 'C' as const },
+      { text: { tr: "Yaratıcı çözümler üretirim.", en: "I generate creative solutions." }, tag: 'I' as const }
     ]
   }
 ];
 
-// DISC Questions (TR)
-const discQuestionsTR = [
-    {
-      id: 1,
-    text: "İş ortamında seni en iyi tanımlayan yaklaşım:",
-      options: [
-      { text: "Hedefe odaklanır, işleri hızla tamamlarım.", type: "D" as const },
-      { text: "İnsan ilişkileriyle süreci kolaylaştırırım.", type: "I" as const },
-      { text: "Ekipte dengeyi sağlar, destek sunarım.", type: "S" as const },
-      { text: "Kuralları takip eder, detaylara dikkat ederim.", type: "C" as const }
-    ]
-    },
-    {
-      id: 2,
-    text: "Yeni bir projeye başlarken ilk adımın nedir?",
-      options: [
-      { text: "Öncelikleri belirler, ilerlemeye başlarım.", type: "D" as const },
-      { text: "Ekibin motivasyonunu artırırım.", type: "I" as const },
-      { text: "Herkesin sürece alışmasına yardımcı olurum.", type: "S" as const },
-      { text: "Planlama ve analizle başlarım.", type: "C" as const }
-    ]
-    },
-    {
-      id: 3,
-    text: "Stres altında nasıl davranırsın?",
-      options: [
-      { text: "Kontrolü ele alırım.", type: "D" as const },
-      { text: "Rahat bir atmosfer yaratmaya çalışırım.", type: "I" as const },
-      { text: "Sakin kalır, anlayışlı olurum.", type: "S" as const },
-      { text: "Kuralları izleyerek çözüm üretirim.", type: "C" as const }
-    ]
-  },
-  {
-    id: 4,
-    text: "Ekip içinde seni en iyi tanımlayan rol:",
-    options: [
-      { text: "Yönlendiren", type: "D" as const },
-      { text: "İletişim kuran", type: "I" as const },
-      { text: "Destek veren", type: "S" as const },
-      { text: "Organize eden", type: "C" as const }
-    ]
-  },
-  {
-    id: 5,
-    text: "En çok hangi başarı seni mutlu eder?",
-    options: [
-      { text: "Zor bir hedefi başarmak", type: "D" as const },
-      { text: "İnsanlar tarafından fark edilmek", type: "I" as const },
-      { text: "Ekibin güvenini kazanmak", type: "S" as const },
-      { text: "Hatasız ve düzgün bir iş yapmak", type: "C" as const }
-    ]
-  },
-  {
-    id: 6,
-    text: "Hangi ortamda daha verimli çalışırsın?",
-    options: [
-      { text: "Under pressure", type: "D" as const },
-      { text: "In social environments", type: "I" as const },
-      { text: "In peaceful, stable places", type: "S" as const },
-      { text: "In systematic and organized places", type: "C" as const }
-    ]
-  },
-  {
-    id: 7,
-    text: "İnsanlar seni nasıl tanımlar?",
-    options: [
-      { text: "Kararlı", type: "D" as const },
-      { text: "Enerjik", type: "I" as const },
-      { text: "Anlayışlı", type: "S" as const },
-      { text: "Dikkatli", type: "C" as const }
-    ]
-  },
-  {
-    id: 8,
-    text: "Yeni insanlarla tanıştığında nasıl hissedersin?",
-    options: [
-      { text: "Güçlü izlenim bırakmak isterim", type: "D" as const },
-      { text: "Kolayca iletişim kurarım", type: "I" as const },
-      { text: "Önce dinlemeyi tercih ederim", type: "S" as const },
-      { text: "Mesafeli durup gözlemlerim", type: "C" as const }
-    ]
-  },
-  {
-    id: 9,
-    text: "En güçlü yönün nedir?",
-    options: [
-      { text: "Liderlik", type: "D" as const },
-      { text: "Sosyal uyum", type: "I" as const },
-      { text: "Sadakat", type: "S" as const },
-      { text: "Disiplin", type: "C" as const }
-    ]
-  },
-  {
-    id: 10,
-    text: "Hangi ilkeye daha çok önem verirsin?",
-    options: [
-      { text: "Sonuç almak", type: "D" as const },
-      { text: "Özgürlük", type: "I" as const },
-      { text: "Sadakat", type: "S" as const },
-      { text: "Doğruluk", type: "C" as const }
-    ]
-  }
-];
+// 36-question DISC personality inventory (EN)
+const discQuestionsEN = discQuestionsTR;
 
 // Expertise Questions (EN)
 const expertiseQuestionsEN = [
@@ -536,17 +695,23 @@ const expertiseQuestionsTR = [
   }
 ];
 
+// ... existing code ...
+// Orijinal array'i kullan, map işlemi yapma
+const discQuestionsTRProcessed = discQuestionsTR;
+// ... existing code ...
+
 // --- Uygulamanın tamamı aşağıda ---
 
 export default function Page() {
-  const { user, userType, setAuthUserType } = useAuth();
+  const { user, userType: contextUserType, setAuthUserType } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [appState, setAppState] = useState<AppState>('login');
   const [discResult, setDiscResult] = useState<any>(null);
   const [expertiseResult, setExpertiseResult] = useState<any>(null);
   const [dashboardKey, setDashboardKey] = useState(0);
-  const [language, setLanguage] = useState<'tr' | 'en'>('en');
   const [mockAnswers, setMockAnswers] = useState<string[] | null>(null);
   const [premiumUnlocked, setPremiumUnlocked] = useState(false);
+  const [showAVMock, setShowAVMock] = useState(false);
 
   // Tüm metinleri iki dilde tanımla
   const TEXT = {
@@ -620,7 +785,7 @@ export default function Page() {
   };
 
   // Soru setleri iki dilde
-  const discQuestions = language === 'tr' ? discQuestionsTR : discQuestionsEN;
+  const discQuestions = language === 'tr' ? discQuestionsTRProcessed : discQuestionsEN;
   const expertiseQuestions = language === 'tr' ? expertiseQuestionsTR : expertiseQuestionsEN;
   const DISC_DESCRIPTIONS_LANG = DISC_DESCRIPTIONS_ALL[language];
   const t = TEXT[language];
@@ -690,7 +855,7 @@ export default function Page() {
     if (userType === 'company') {
       setAppState('company-dashboard');
     } else {
-      setAppState('dashboard');
+        setAppState('dashboard');
     }
   };
 
@@ -698,7 +863,7 @@ export default function Page() {
     return (
     <>
       <div className="pt-14">
-        {user || userType ? <TopBar onModuleSelect={handleModuleSelect} onViewPackages={() => setPremiumUnlocked(true)} premiumUnlocked={premiumUnlocked} onUnlockPremium={() => setPremiumUnlocked(true)} /> : null}
+        {user || contextUserType ? <TopBar onModuleSelect={handleModuleSelect} onViewPackages={() => setPremiumUnlocked(true)} premiumUnlocked={premiumUnlocked} onUnlockPremium={() => setPremiumUnlocked(true)} /> : null}
         {!premiumUnlocked && (
           <div className="fixed bottom-4 right-4 z-50">
             <button onClick={() => setPremiumUnlocked(true)} className="px-4 py-2 rounded-lg bg-amber-500 text-white font-bold shadow-lg">Demo Premium'u Aç</button>
@@ -706,18 +871,18 @@ export default function Page() {
         )}
         {(() => {
           // Giriş yapılmamışsa login ekranı
-          if (!user && !userType) {
+          if (!user && !contextUserType) {
             return <LoginScreen onLoginSuccess={(userType) => {
               setAuthUserType(userType || 'individual');
               if (userType === 'company') {
                 setAppState('company-dashboard');
               } else {
-                setAppState('dashboard');
+              setAppState('dashboard');
               }
             }} />;
           }
           // Admin paneli
-          if (userType === 'company' && appState === 'admin') {
+          if (contextUserType === 'company' && appState === 'admin') {
             return <AdminPanel />;
           }
           // Personality Assessment Sonuç Ekranı
@@ -734,61 +899,38 @@ export default function Page() {
                     <span className="inline-block px-6 py-2 rounded-full text-lg font-bold mb-2" style={{ background: discData.color + '22', color: discData.color }}>{discData.title}</span>
                     <div className="text-base md:text-lg text-gray-700 mb-2">{discData.description}</div>
               </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 w-full">
-                    {(['D','I','S','C'] as const).map((type) => (
-                      <Tooltip key={type}>
-                        <TooltipTrigger asChild>
-                          <div className="flex flex-col items-center cursor-pointer w-full">
-                            <div
-                              className="w-12 h-12 rounded-xl flex items-center justify-center shadow border-2 text-white text-lg font-bold transition-all duration-200"
-                              style={{ background: discData.color, borderColor: discData.color }}
-                            >
-                              <span className="text-xl font-bold">{discResult.scores[type]}</span>
-        </div>
-      </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="text-center max-w-xs">
-                          <div className="font-bold mb-1" style={{ color: DISC_DESCRIPTIONS_LANG[type].color }}>{DISC_DESCRIPTIONS_LANG[type].title}</div>
-                          <div className="text-xs text-gray-700">{DISC_DESCRIPTIONS_LANG[type].description}</div>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-        </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
-                    <div className="bg-blue-50 rounded-xl p-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 w-full">
+                    <div className="bg-blue-50 rounded-xl p-4">
                       <div className="font-semibold mb-1 text-sm">{t.strengths}</div>
                       <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
                         {discData.traits.map((trait, i) => <li key={i}>{trait}</li>)}
                       </ul>
-              </div>
-                    <div className="bg-green-50 rounded-xl p-3">
+                    </div>
+                    <div className="bg-green-50 rounded-xl p-4">
                       <div className="font-semibold mb-1 text-sm">{t.careers}</div>
                       <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
                         {discData.careers.map((career, i) => <li key={i}>{career}</li>)}
                       </ul>
-            </div>
-                    <div className="bg-purple-50 rounded-xl p-3">
+                    </div>
+                    <div className="bg-purple-50 rounded-xl p-4 md:col-span-2">
                       <div className="font-semibold mb-1 text-sm">{t.tools}</div>
                       <ul className="list-disc list-inside text-gray-700 text-xs space-y-1">
                         {discData.tools.map((tool, i) => <li key={i}>{tool}</li>)}
                       </ul>
-        </div>
-      </div>
-                  <div className="bg-yellow-50 rounded-xl p-3 mb-4">
+                    </div>
+                  </div>
+                  <div className="bg-yellow-50 rounded-xl p-4 mb-4">
                     <div className="font-semibold mb-1 text-sm">{t.analysis}</div>
                     <div className="text-gray-700 text-xs">
                       <b>{t.strengthsLabel}</b> {discData.traits.slice(0,2).join(', ')}<br/>
                       <b>{t.devAreas}</b> {t.devAreasText}
-    </div>
-        </div>
+                    </div>
+                  </div>
                   <div className="flex flex-col md:flex-row items-center justify-center gap-3 mt-2 w-full">
                     <div className="flex flex-col sm:flex-row gap-2 w-full">
-                      <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-3 py-2 text-sm font-semibold shadow-lg flex-1 min-w-0" onClick={() => setAppState('expertise')}>
-                        {t.continue}
-              </Button>
-                      <Button variant="outline" className="px-3 py-2 text-sm font-semibold flex-1 min-w-0" onClick={() => setAppState('dashboard')}>
-                        {t.home}
-                    </Button>
+                      <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-3 py-2 text-sm font-semibold shadow-lg flex-1 min-w-0 flex items-center justify-center gap-2" onClick={() => setAppState('expertise')}>
+                        Uzmanlık Analizi (2,99 USD)
+                      </Button>
                       <AIReportModal discResults={discResult} language={language} buttonClassName="flex-1 min-w-0 px-3 py-2 text-sm font-semibold" buttonText={t.aiReport} />
                   </div>
                 </div>
@@ -917,3 +1059,15 @@ export default function Page() {
 }
 
 export const dynamic = "force-dynamic";
+
+console.log("TR Soru sayısı:", discQuestionsTRProcessed.length);
+console.log("Array içeriği:", discQuestionsTRProcessed.map((q, i) => ({ index: i, id: q?.id, hasText: !!q?.text, hasOptions: !!q?.options })));
+discQuestionsTRProcessed.forEach((q, i) => {
+  if (!q) console.error("Eksik soru:", i+1, q);
+  if (!q.text || !q.text.tr || !q.text.en) console.error("Eksik text:", i+1, q);
+  if (!q.options || q.options.length !== 4) console.error("Eksik/yanlış opsiyon:", i+1, q);
+  q.options?.forEach((opt, j) => {
+    if (!opt.text || !opt.text.tr || !opt.text.en) console.error(`Soru ${i+1} opsiyon ${j+1} eksik metin:`, opt);
+    if (!opt.tag) console.error(`Soru ${i+1} opsiyon ${j+1} eksik tag:`, opt);
+  });
+});

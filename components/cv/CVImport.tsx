@@ -187,25 +187,25 @@ export default function CVImport({
             <div className="flex flex-col gap-4">
               <Button
                 variant="outline"
-                className="flex items-center justify-center gap-3 py-6 text-lg font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-blue-700 border-blue-200 hover:bg-blue-50"
+                className="flex items-center justify-center gap-3 py-6 text-base font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-blue-700 border-blue-200 hover:bg-blue-50 w-full max-w-full"
                 onClick={() => setImportMethod("linkedin")}
               >
-                <img src="/linkedin.svg" alt="LinkedIn" className="w-6 h-6" />
-                <div className="text-left">
-                  <div className="font-bold">{t.linkedinTitle}</div>
-                  <div className="text-sm text-gray-600">{t.linkedinDesc}</div>
+                <img src="/linkedin.svg" alt="LinkedIn" className="w-6 h-6 shrink-0" />
+                <div className="flex flex-col text-left min-w-0 w-full">
+                  <div className="font-bold break-words whitespace-normal leading-tight">{t.linkedinTitle}</div>
+                  <div className="text-xs text-gray-600 break-words whitespace-normal leading-tight">{t.linkedinDesc}</div>
                 </div>
               </Button>
               <div className="text-center text-gray-400">- {t.or} -</div>
               <Button
                 variant="outline"
-                className="flex items-center justify-center gap-3 py-6 text-lg font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-green-700 border-green-200 hover:bg-green-50"
+                className="flex items-center justify-center gap-3 py-6 text-base font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-green-700 border-green-200 hover:bg-green-50 w-full max-w-full"
                 onClick={() => setImportMethod("file")}
               >
-                <img src="/upload.svg" alt="Upload" className="w-6 h-6" />
-                <div className="text-left">
-                  <div className="font-bold">{t.fileTitle}</div>
-                  <div className="text-sm text-gray-600">{t.fileDesc}</div>
+                <img src="/upload.svg" alt="Upload" className="w-6 h-6 shrink-0" />
+                <div className="flex flex-col text-left min-w-0 w-full">
+                  <div className="font-bold break-words whitespace-normal leading-tight">{t.fileTitle}</div>
+                  <div className="text-xs text-gray-600 break-words whitespace-normal leading-tight">{t.fileDesc}</div>
                 </div>
               </Button>
             </div>

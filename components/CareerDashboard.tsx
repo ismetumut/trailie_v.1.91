@@ -1,10 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ModuleMenu from "./ModuleMenu";
 import TopBar from "./TopBar";
-import ReportsPanel from "./ReportsPanel";
 import Packages from "./pricing/Packages";
 import { Briefcase, Users, GraduationCap, Award, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,12 +21,14 @@ import PricingStrategyTask from "./simulation/pricing-strategy-task";
 import OnepagerTask from "./simulation/onepager-task";
 import PresentationTask from "./simulation/presentation-task";
 import AISimulationReport from "./AISimulationReport";
+import InterviewEvaluation from "./interview/InterviewEvaluation";
 
 export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (key: string) => void }) {
   const { user, userType } = useAuth();
   const { language } = useLanguage();
   const [currentView, setCurrentView] = useState<string>("dashboard");
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const reportsRef = useRef<HTMLDivElement>(null);
 
   if (!user && !userType) {
     return (
@@ -74,6 +75,12 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
     } else if (key === 'home' || key === 'dashboard') {
       setCurrentView('dashboard');
       setSelectedModule(null);
+    } else if (key === 'reports') {
+      setSelectedModule('profile');
+      setCurrentView('module');
+      setTimeout(() => {
+        reportsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
     } else {
       setSelectedModule(key);
       setCurrentView('module');
@@ -98,7 +105,7 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
       case 'jobs':
         return <JobDiscovery language={language} />;
       case 'profile':
-        return <ProfileMain language={language} />;
+        return <ProfileMain language={language} reportsRef={reportsRef} />;
       case 'messages':
         return <ProfileMessages language={language} />;
       case 'settings':
@@ -107,6 +114,8 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
         return <ProfileHelp language={language} />;
       case 'coaching':
         return <CoachingSession sessionsLeft={1} onBookSession={() => {}} onBuyAdditional={() => {}} />;
+      case 'interview':
+        return <InterviewEvaluation language={language} onClose={() => setCurrentView('dashboard')} />;
       default:
         return null;
     }
@@ -262,9 +271,6 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
                   <Button variant="outline" className="w-full max-w-xs mt-auto" onClick={() => goToModule('coaching')}>{language === 'tr' ? 'Koçluk Al' : 'Get Coaching'}</Button>
                 </div>
               </div>
-
-              {/* Raporlar Paneli en altta butonlarla */}
-              <ReportsPanel language={language} />
             </>
           )}
         </div>

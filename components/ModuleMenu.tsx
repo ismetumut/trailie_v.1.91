@@ -18,40 +18,40 @@ const modules = [
 
 const premiumModules = ['expertise', 'role', 'simulation', 'cv', 'jobs', 'interview', 'networking', 'coaching'];
 
-const TEXT = {
-  tr: {
-    title: 'Modüller',
-    modules: [
+  const TEXT = {
+    tr: {
+      title: 'Modüller',
+      modules: [
       { key: 'assessment', label: 'Kişilik Envanteri', desc: 'AI destekli kişilik envanteri' },
-      { key: 'expertise', label: 'Uzmanlık Analizi', desc: 'Yetenek ve deneyim değerlendirmesi' },
-      { key: 'role', label: 'Rol Simülasyonu', desc: 'AI destekli rol önerileri ve senaryoları' },
-      { key: 'simulation', label: 'Simülasyon Oyunları', desc: 'Etkileşimli kariyer senaryoları' },
-      { key: 'cv', label: 'CV Hazırlama', desc: 'AI destekli özgeçmiş oluşturma' },
-      { key: 'jobs', label: 'İş İlanları', desc: 'Eşleşmeli iş ilanları' },
-      { key: 'interview', label: 'Mülakat Hazırlığı', desc: 'Mülakat soruları ve senaryoları' },
-      { key: 'networking', label: 'Network', desc: 'Profesyonel ağ araçları' },
-      { key: 'coaching', label: 'Koçluk', desc: 'Kariyer koçluğu seansları' },
+        { key: 'expertise', label: 'Uzmanlık Analizi', desc: 'Yetenek ve deneyim değerlendirmesi' },
+        { key: 'role', label: 'Rol Simülasyonu', desc: 'AI destekli rol önerileri ve senaryoları' },
+        { key: 'simulation', label: 'Simülasyon Oyunları', desc: 'Etkileşimli kariyer senaryoları' },
+        { key: 'cv', label: 'CV Hazırlama', desc: 'AI destekli özgeçmiş oluşturma' },
+        { key: 'jobs', label: 'İş İlanları', desc: 'Eşleşmeli iş ilanları' },
+        { key: 'interview', label: 'Mülakat Hazırlığı', desc: 'Mülakat soruları ve senaryoları' },
+        { key: 'networking', label: 'Network', desc: 'Profesyonel ağ araçları' },
+        { key: 'coaching', label: 'Koçluk', desc: 'Kariyer koçluğu seansları' },
     ],
     upgrade: 'Paketleri Görüntüle',
     upgradeDesc: 'Tüm modüllere erişim için paket satın al'
-  },
-  en: {
-    title: 'Modules',
-    modules: [
+    },
+    en: {
+      title: 'Modules',
+      modules: [
       { key: 'assessment', label: 'Personality Assessment', desc: 'AI-powered personality inventory' },
-      { key: 'expertise', label: 'Expertise Analysis', desc: 'Skill and experience evaluation' },
-      { key: 'role', label: 'Role Simulation', desc: 'AI-powered role suggestions and scenarios' },
-      { key: 'simulation', label: 'Simulation Games', desc: 'Interactive career scenario simulations' },
-      { key: 'cv', label: 'CV Generator', desc: 'AI-powered resume creation' },
-      { key: 'jobs', label: 'Job Board', desc: 'Curated job listings with matching' },
-      { key: 'interview', label: 'Interview Prep', desc: 'Practice interview questions and scenarios' },
-      { key: 'networking', label: 'Networking', desc: 'Professional networking tools' },
-      { key: 'coaching', label: 'Coaching', desc: 'Career coaching sessions' },
+        { key: 'expertise', label: 'Expertise Analysis', desc: 'Skill and experience evaluation' },
+        { key: 'role', label: 'Role Simulation', desc: 'AI-powered role suggestions and scenarios' },
+        { key: 'simulation', label: 'Simulation Games', desc: 'Interactive career scenario simulations' },
+        { key: 'cv', label: 'CV Generator', desc: 'AI-powered resume creation' },
+        { key: 'jobs', label: 'Job Board', desc: 'Curated job listings with matching' },
+        { key: 'interview', label: 'Interview Prep', desc: 'Practice interview questions and scenarios' },
+        { key: 'networking', label: 'Networking', desc: 'Professional networking tools' },
+        { key: 'coaching', label: 'Coaching', desc: 'Career coaching sessions' },
     ],
     upgrade: 'View Packages',
     upgradeDesc: 'Purchase a package to access all modules'
-  }
-};
+    }
+  };
 
 export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premiumUnlocked = false, onUnlockPremium }: { onSelect?: (key: string) => void, drawerOnly?: boolean, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
   const { user, userType } = useAuth();
@@ -65,13 +65,12 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premi
       <nav className="flex flex-col gap-1">
         <div className="font-bold text-lg mb-3">{t.title}</div>
         {t.modules
-          .filter((mod: any) => mod.key !== 'simulation')
           .map((mod: any, i: number) => {
             const isPremium = premiumModules.includes(mod.key);
             const isUnlocked = !isPremium || premiumUnlocked;
             return (
-              <button
-                key={mod.key}
+            <button
+              key={mod.key}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition text-left relative ${!isUnlocked ? 'opacity-60 cursor-pointer' : ''}`}
                 onClick={() => { 
                   if (isPremium && !premiumUnlocked) {
@@ -81,8 +80,8 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premi
                     onSelect?.(mod.key);
                   }
                 }}
-              >
-                <div>
+            >
+              <div>
                   <div className="font-medium text-gray-900 text-sm flex items-center gap-2">
                     {mod.label}
                     {isPremium && (
@@ -91,9 +90,9 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premi
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-gray-500">{mod.desc}</div>
-                </div>
-              </button>
+                <div className="text-xs text-gray-500">{mod.desc}</div>
+              </div>
+            </button>
             );
           })}
         

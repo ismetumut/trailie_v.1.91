@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import ReportsPanel from '../ReportsPanel';
 
 const content = {
   tr: {
@@ -33,7 +34,7 @@ const content = {
   }
 };
 
-export default function ProfileMain({ language = "tr" }: { language?: "tr" | "en" }) {
+export default function ProfileMain({ language = "tr", reportsRef }: { language?: "tr" | "en", reportsRef?: React.RefObject<HTMLDivElement> }) {
   const t = content[language];
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 flex flex-col items-center p-4">
@@ -62,6 +63,9 @@ export default function ProfileMain({ language = "tr" }: { language?: "tr" | "en
             <Button variant="outline" className="w-full mt-2">{t.changePassword}</Button>
           </CardContent>
         </Card>
+        <div className="mb-6" ref={reportsRef}>
+          <ReportsPanel language={language} />
+        </div>
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-lg font-bold">{t.payment}</CardTitle>

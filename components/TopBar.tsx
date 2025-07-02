@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut, FileText, ArrowLeft } from "lucide-react";
+import { Menu, Home, Bell, UserCircle, X, Mail, Settings, HelpCircle, LogOut, FileText, ArrowLeft, BarChart3 } from "lucide-react";
 import { TrailieLogo } from "@/components/auth/TrailieLogo";
 import { useAuth } from "@/contexts/AuthContext";
 import ModuleMenu from "@/components/ModuleMenu";
@@ -33,6 +33,7 @@ export default function TopBar({ onModuleSelect, onBack, onViewPackages, premium
         { icon: <Mail className="w-5 h-5" />, label: 'Mesajlar', key: 'messages' },
         { icon: <Settings className="w-5 h-5" />, label: 'Ayarlar', key: 'settings' },
         { icon: <HelpCircle className="w-5 h-5" />, label: 'Yardım', key: 'help' },
+        { icon: <BarChart3 className="w-5 h-5 text-indigo-500" />, label: 'Raporlarım', key: 'reports' },
         { icon: <FileText className="w-5 h-5 text-blue-500" />, label: 'Özgeçmişlerim', key: 'resumes' },
         { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Çıkış Yap', key: 'logout', danger: true },
       ]
@@ -45,6 +46,7 @@ export default function TopBar({ onModuleSelect, onBack, onViewPackages, premium
         { icon: <Mail className="w-5 h-5" />, label: 'Messages', key: 'messages' },
         { icon: <Settings className="w-5 h-5" />, label: 'Settings', key: 'settings' },
         { icon: <HelpCircle className="w-5 h-5" />, label: 'Help', key: 'help' },
+        { icon: <BarChart3 className="w-5 h-5 text-indigo-500" />, label: 'My Reports', key: 'reports' },
         { icon: <FileText className="w-5 h-5 text-blue-500" />, label: 'My Resumes', key: 'resumes' },
         { icon: <LogOut className="w-5 h-5 text-red-500" />, label: 'Log Out', key: 'logout', danger: true },
       ]

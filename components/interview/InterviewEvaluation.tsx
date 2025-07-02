@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Star, ThumbsUp, TrendingUp } from "lucide-react";
+import InterviewPrep from "./InterviewPrep";
+import MockInterview from "./MockInterview";
+import InterviewReview from "./InterviewReview";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 
 const content = {
   tr: {
@@ -55,40 +60,123 @@ const dummyEval = {
   }
 };
 
+const dummyUserProfile = {
+  disc: { D: 82, I: 60, S: 55, C: 91, dominant: "C" },
+  expertise: { "Sayısal Analiz": 94, "Stratejik Düşünme": 88, "Fiyatlama": 90 },
+  simulation: { "Rol Uygunluğu": 85, "İletişim": 70 },
+  cv: {
+    summary: "Fiyatlandırma alanında 5+ yıl deneyimli, analitik ve detaycı uzman.",
+    highlights: [
+      "Büyük veri ile fiyat optimizasyonu",
+      "Çapraz fonksiyonlu ekiplerle çalışma",
+      "Yüksek başarıyla tamamlanan fiyatlandırma projeleri"
+    ]
+  },
+  role: "Pricing Specialist"
+};
+
+const coachingData = {
+  role: "Pricing Specialist",
+  strengths: [
+    { label: "Sayısal analiz yetkinliği", value: 94 },
+    { label: "Stratejik düşünme", value: 88 },
+    { label: "Detaylara dikkat", value: 85 }
+  ],
+  devAreas: [
+    "Paydaşlarla müzakere yetkinliği",
+    "Sunum ve ifade becerileri"
+  ],
+  positiveFraming: [
+    "Müzakere konusunda deneyim kazanıyorum, ancak karar alma süreçlerinde veriyle ikna etme gücüm oldukça yüksek.",
+    "Sunumlarımı önceden detaylı hazırlarım ve geri bildirimlerle sürekli geliştiririm."
+  ],
+  expectedQuestions: [
+    "Yeni bir ürünün ideal fiyatını nasıl belirlersiniz?",
+    "Satış ekibiyle fiyat konusunda yaşadığınız bir anlaşmazlığı nasıl çözdünüz?",
+    "Rekabet analizi sonuçlarını fiyatlamanıza nasıl entegre edersiniz?",
+    "Hangi araçları kullanarak fiyatlama kararlarını desteklersiniz?"
+  ]
+};
+
+const mockQuestions = [
+  "Satış ekibi indirimi zorlarken, sizin modeliniz indirimi desteklemiyorsa ne yaparsınız?",
+  "Daha önce yürüttüğünüz bir fiyatlama projesini anlatır mısınız?",
+  "Veri kısıtlı bir pazarda nasıl fiyatlama stratejisi kurarsınız?"
+];
+
+const reviewData = {
+  role: "Pricing Specialist",
+  scores: {
+    fluency: 8.5,
+    technical: 9.2,
+    fit: 9.0,
+    confidence: 6.5,
+    clarity: 8.8,
+    structure: 9.1
+  },
+  strengths: [
+    "Teknik bilgi ve analiz gücü çok yüksek",
+    "Cevaplarda yapı ve netlik",
+    "Stratejik bakış açısı"
+  ],
+  devAreas: [
+    "Paydaşlarla müzakere",
+    "Sunum ve ikna becerileri"
+  ],
+  summary: "Kullanıcı teknik bilgi konusunda oldukça güçlü ve cevaplarında iyi bir yapı kurmuş. Satış tarafındaki senaryolarda ikna kabiliyeti gelişmekte. Genel olarak Pricing Specialist rolüne yüksek derecede uygundur.",
+  recommendations: [
+    "Müzakere ve ikna becerileri için vaka çalışmaları yapın.",
+    "Sunum pratiğiyle iletişiminizi güçlendirin.",
+    "Farklı departmanlarla işbirliği simülasyonları deneyin."
+  ],
+  radar: [
+    { label: "Sayısal Düşünme", value: 92 },
+    { label: "İletişim", value: 74 },
+    { label: "Veri Kullanımı", value: 88 },
+    { label: "Rol Uyumu", value: 90 },
+    { label: "Müzakere", value: 65 }
+  ]
+};
+
+const AVMockInterview = dynamic(
+  () => import("./AVMockInterview").then(mod => mod.default),
+  { ssr: false }
+);
+
 export default function InterviewEvaluation({ language = "tr", onClose }: { language?: "tr" | "en"; onClose: () => void }) {
-  const t = content[language];
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 flex flex-col items-center p-4">
-      <div className="w-full max-w-xl mx-auto">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-purple-500" /> {t.title}
-            </CardTitle>
-            <div className="text-gray-500 text-sm mt-1">{t.summary}</div>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-6 mt-2">
-            <div className="flex flex-wrap gap-3">
-              <Badge className="bg-green-100 text-green-700 text-base px-3 py-1"><ThumbsUp className="w-4 h-4 mr-1 inline" />{t.strengths}: {dummyEval.strengths[language].join(", ")}</Badge>
-              <Badge className="bg-yellow-100 text-yellow-700 text-base px-3 py-1"><TrendingUp className="w-4 h-4 mr-1 inline" />{t.devAreas}: {dummyEval.devAreas[language].join(", ")}</Badge>
-              <Badge className="bg-indigo-100 text-indigo-700 text-base px-3 py-1"><Star className="w-4 h-4 mr-1 inline" />{t.score}: {dummyEval.score}/100</Badge>
-            </div>
-            <div className="bg-white rounded-xl shadow p-4">
-              <div className="font-semibold text-gray-800 mb-1">{t.aiComment}</div>
-              <div className="text-gray-700 text-sm">{dummyEval.aiComment[language]}</div>
-            </div>
-            <div className="bg-white rounded-xl shadow p-4">
-              <div className="font-semibold text-gray-800 mb-1">{t.suggestions}</div>
-              <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-                {dummyEval.suggestions[language].map((s, i) => <li key={i}>{s}</li>)}
-              </ul>
-            </div>
-            <div className="flex justify-end mt-4">
-              <Button className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg text-lg" onClick={onClose}>{t.finish}</Button>
-            </div>
-          </CardContent>
-        </Card>
+  const [step, setStep] = useState(0);
+  const [mode, setMode] = useState<'text' | 'av'>('text');
+  // 0: Hazırlık, 1: Mock, 2: Değerlendirme
+  if (step === 0) {
+    return (
+      <div>
+        <div className="flex gap-4 mb-6 justify-center">
+          <button
+            className={`px-4 py-2 rounded font-bold ${mode === 'text' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`}
+            onClick={() => setMode('text')}
+          >
+            Yazılı Mülakat
+          </button>
+          <button
+            className={`px-4 py-2 rounded font-bold ${mode === 'av' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`}
+            onClick={() => setMode('av')}
+          >
+            Sesli/Video Mülakat
+          </button>
+        </div>
+        <InterviewPrep language={language} onStartMock={() => setStep(1)} />
       </div>
-    </div>
-  );
+    );
+  }
+  if (step === 1) {
+    if (mode === 'text') {
+      return <MockInterview language={language} onFinish={() => setStep(2)} />;
+    } else {
+      return <AVMockInterview />;
+    }
+  }
+  if (step === 2) {
+    return <InterviewReview review={reviewData} />;
+  }
+  return null;
 } 

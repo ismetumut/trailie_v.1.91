@@ -63,7 +63,7 @@ export default function ModuleCard({
           ) : (
             language === "tr" ? "Satın Al" : "Purchase"
           )}
-        </Button>
+          </Button>
       </CardContent>
     </Card>
   )
