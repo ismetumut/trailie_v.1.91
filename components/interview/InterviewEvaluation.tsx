@@ -170,9 +170,9 @@ export default function InterviewEvaluation({ language = "tr", onClose }: { lang
   }
   if (step === 1) {
     if (mode === 'text') {
-      return <MockInterview language={language} onFinish={() => setStep(2)} />;
+      return <MockInterview language={language} />;
     } else {
-      return <AVMockInterview />;
+      return <AVMockInterview language={language} />;
     }
   }
   if (step === 2) {

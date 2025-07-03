@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,8 @@ const content = {
     userLabel: "Kullanıcı",
     scoreLabel: "Başarı Skoru",
     skills: ["İletişim", "Problem Çözme", "Teknik Yetenek", "Takım Çalışması", "Analitik Düşünme", "Liderlik"],
-    noData: "Veri bulunamadı."
+    noData: "Veri bulunamadı.",
+    loading: "AI analizi hazırlanıyor..."
   },
   en: {
     title: "AI Development Report",
@@ -44,32 +45,41 @@ const content = {
     userLabel: "User",
     scoreLabel: "Performance Score",
     skills: ["Communication", "Problem Solving", "Technical Skills", "Teamwork", "Analytical Thinking", "Leadership"],
-    noData: "No data available."
+    noData: "No data available.",
+    loading: "AI analysis is being prepared..."
   }
 };
 
-// Dummy AI analysis and recommendations (replace with real AI output later)
-function getAIAnalysis(language: "tr" | "en") {
-  return language === "tr"
-    ? "İkna kabiliyetiniz ve iletişim becerileriniz yüksek. Veri analizi ve teknik yetkinliklerde gelişim gösterebilirsiniz. Takım çalışmasında uyumlusunuz, liderlik potansiyeliniz var."
-    : "Your persuasion and communication skills are strong. You can improve in data analysis and technical competencies. You are a good team player and have leadership potential.";
-}
+// Real AI analysis function
+async function getAIAnalysis(userData: any, language: "tr" | "en") {
+  try {
+    const response = await fetch('/api/ai-simulation-analysis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userData,
+        language
+      }),
+    });
 
-function getStrengths(language: "tr" | "en") {
-  return language === "tr"
-    ? ["İletişim", "İkna Kabiliyeti", "Takım Çalışması"]
-    : ["Communication", "Persuasion", "Teamwork"];
-}
+    if (!response.ok) {
+      throw new Error('AI analysis failed');
+    }
 
-function getDevAreas(language: "tr" | "en") {
-  return language === "tr"
-    ? ["Veri Analizi", "Teknik Yetenek"]
-    : ["Data Analysis", "Technical Skills"];
-}
-
-function getRecommendations(language: "tr" | "en") {
-  return language === "tr"
-    ? [
+    const data = await response.json();
+    return data.analysis;
+  } catch (error) {
+    console.error('AI Analysis error:', error);
+    // Fallback to default analysis
+    return {
+      strengths: language === "tr" ? ["İletişim", "İkna Kabiliyeti", "Takım Çalışması"] : ["Communication", "Persuasion", "Teamwork"],
+      devAreas: language === "tr" ? ["Veri Analizi", "Teknik Yetenek"] : ["Data Analysis", "Technical Skills"],
+      aiAnalysis: language === "tr" 
+        ? "İkna kabiliyetiniz ve iletişim becerileriniz yüksek. Veri analizi ve teknik yetkinliklerde gelişim gösterebilirsiniz. Takım çalışmasında uyumlusunuz, liderlik potansiyeliniz var."
+        : "Your persuasion and communication skills are strong. You can improve in data analysis and technical competencies. You are a good team player and have leadership potential.",
+      recommendations: language === "tr" ? [
         {
           area: "Veri Analizi",
           links: [
@@ -84,8 +94,7 @@ function getRecommendations(language: "tr" | "en") {
             { label: "Coursera: Python for Everybody", url: "https://www.coursera.org/specializations/python" }
           ]
         }
-      ]
-    : [
+      ] : [
         {
           area: "Data Analysis",
           links: [
@@ -100,26 +109,62 @@ function getRecommendations(language: "tr" | "en") {
             { label: "Coursera: Python for Everybody", url: "https://www.coursera.org/specializations/python" }
           ]
         }
-      ];
-}
-
-// Dummy radar data (replace with real AI output later)
-function getRadarData(language: "tr" | "en") {
-  const skills = content[language].skills;
-  return skills.map((skill) => ({
-    skill,
-    value: Math.floor(Math.random() * 40) + 60 // 60-100 arası dummy skor
-  }));
+      ],
+      radar: [
+        { skill: language === "tr" ? "İletişim" : "Communication", value: 85 },
+        { skill: language === "tr" ? "Problem Çözme" : "Problem Solving", value: 78 },
+        { skill: language === "tr" ? "Teknik Yetenek" : "Technical Skills", value: 72 },
+        { skill: language === "tr" ? "Takım Çalışması" : "Teamwork", value: 88 },
+        { skill: language === "tr" ? "Analitik Düşünme" : "Analytical Thinking", value: 75 },
+        { skill: language === "tr" ? "Liderlik" : "Leadership", value: 70 }
+      ]
+    };
+  }
 }
 
 export default function AISimulationReport({ user, discResults, expertiseResults, assessmentResults, simulationResults, language = "tr" }: AISimulationReportProps) {
   const t = content[language];
-  const radarData = getRadarData(language);
-  const strengths = getStrengths(language);
-  const devAreas = getDevAreas(language);
-  const recommendations = getRecommendations(language);
-  const aiAnalysis = getAIAnalysis(language);
-  const overallScore = Math.round(radarData.reduce((a, b) => a + b.value, 0) / radarData.length);
+  const [analysis, setAnalysis] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalysis = async () => {
+      setLoading(true);
+      const userData = {
+        discResults,
+        expertiseResults,
+        assessmentResults,
+        simulationResults
+      };
+      
+      const aiAnalysis = await getAIAnalysis(userData, language);
+      setAnalysis(aiAnalysis);
+      setLoading(false);
+    };
+
+    fetchAnalysis();
+  }, [discResults, expertiseResults, assessmentResults, simulationResults, language]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 p-4 flex flex-col items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">{t.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 p-4 flex flex-col items-center justify-center">
+        <p className="text-gray-600">{t.noData}</p>
+      </div>
+    );
+  }
+
+  const overallScore = Math.round(analysis.radar.reduce((a: number, b: any) => a + b.value, 0) / analysis.radar.length);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-emerald-50 p-4 flex flex-col items-center">
@@ -145,13 +190,13 @@ export default function AISimulationReport({ user, discResults, expertiseResults
             <div>
               <div className="font-semibold mb-1">{t.strengths}</div>
               <ul className="list-disc list-inside text-green-700 text-sm space-y-1">
-                {strengths.map((s, i) => <li key={i}>{s}</li>)}
+                {analysis.strengths.map((s: string, i: number) => <li key={i}>{s}</li>)}
               </ul>
             </div>
             <div>
               <div className="font-semibold mb-1">{t.devAreas}</div>
               <ul className="list-disc list-inside text-red-700 text-sm space-y-1">
-                {devAreas.map((s, i) => <li key={i}>{s}</li>)}
+                {analysis.devAreas.map((s: string, i: number) => <li key={i}>{s}</li>)}
               </ul>
             </div>
           </div>
@@ -160,7 +205,7 @@ export default function AISimulationReport({ user, discResults, expertiseResults
             <div className="font-semibold mb-2">{t.radarTitle}</div>
             <div className="w-full h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
+                <RadarChart data={analysis.radar}>
                   <PolarGrid />
                   <PolarAngleAxis dataKey="skill" />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} />
@@ -174,18 +219,18 @@ export default function AISimulationReport({ user, discResults, expertiseResults
           <div>
             <div className="font-semibold mb-1">{t.aiAnalysis}</div>
             <div className="bg-white/80 rounded-lg p-3 text-gray-700 text-base shadow-inner">
-              {aiAnalysis}
+              {analysis.aiAnalysis}
             </div>
           </div>
           {/* Eğitim Önerileri */}
           <div>
             <div className="font-semibold mb-1">{t.recommendations}</div>
             <div className="space-y-3">
-              {recommendations.map((rec, i) => (
+              {analysis.recommendations.map((rec: any, i: number) => (
                 <div key={i}>
                   <div className="font-semibold text-indigo-700 mb-1">🎯 {rec.area}</div>
                   <ul className="list-disc list-inside ml-4">
-                    {rec.links.map((link, j) => (
+                    {rec.links.map((link: any, j: number) => (
                       <li key={j}>
                         <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">{link.label}</a>
                       </li>

@@ -19,13 +19,13 @@ export default function AIChatbot() {
       placeholder: 'Sorunuzu yazın...',
       send: 'Gönder',
       welcome: 'Merhaba! Kariyerinle ilgili her konuda bana soru sorabilirsin.',
-      systemPrompt: 'Sen bir kariyer danışmanı AI asistanısın. Kullanıcıya Türkçe ve samimi şekilde, kısa ve net cevaplar ver.'
+      systemPrompt: 'Sen bir kariyer danışmanı AI asistanısın. Kullanıcıya Türkçe ve samimi şekilde, kısa ve net cevaplar ver. Maksimum 3-4 cümlelik cevaplar ver.'
     },
     en: {
       placeholder: 'Type your question...',
       send: 'Send',
       welcome: 'Hello! You can ask me anything about your career.',
-      systemPrompt: 'You are a career coach AI assistant. Respond in English, friendly, concise and clear.'
+      systemPrompt: 'You are a career coach AI assistant. Respond in English, friendly, concise and clear. Give maximum 3-4 sentence answers.'
     }
   };
   const t = TEXT[language];
@@ -57,28 +57,65 @@ export default function AIChatbot() {
     setInputValue('');
     setIsLoading(true);
 
-    // Simüle edilmiş AI yanıtı (gerçek uygulamada OpenAI API'si kullanılacak)
-    setTimeout(() => {
-      const aiResponses = [
-        "Bu konuda size yardımcı olabilirim. Öncelikle mevcut durumunuzu değerlendirmemiz gerekiyor. Hangi alanda çalışmak istiyorsunuz?",
-        "Harika bir soru! Kariyer değişikliği yaparken dikkat etmeniz gereken en önemli nokta, mevcut becerilerinizi yeni alana nasıl transfer edeceğinizdir.",
-        "Network kurma konusunda size birkaç pratik öneri verebilirim. Öncelikle LinkedIn profilinizi güncelleyin ve sektörünüzdeki etkinliklere katılın.",
-        "CV'nizi güçlendirmek için somut başarılarınızı vurgulayın. Sayısal veriler ve sonuçlar her zaman daha etkileyicidir.",
-        "Mülakat hazırlığı için en önemli şey, şirket hakkında detaylı araştırma yapmak ve kendi deneyimlerinizi onların ihtiyaçlarıyla eşleştirmektir."
-      ];
-      
-      const randomResponse = aiResponses[Math.floor(Math.random() * aiResponses.length)];
-      
+    try {
+      // Call OpenAI API for real AI response
+      const response = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: inputValue,
+          language: language,
+          conversationHistory: messages.map(msg => ({
+            role: 'isUser' in msg ? (msg.isUser ? 'user' : 'assistant') : msg.role,
+            content: 'text' in msg ? msg.text : msg.content
+          }))
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('AI response failed');
+      }
+
+      const data = await response.json();
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: randomResponse,
+        text: data.response || t.welcome,
         isUser: false,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('AI Chat error:', error);
+      // Fallback response if API fails
+      const fallbackResponses = {
+        tr: [
+          "Üzgünüm, şu anda teknik bir sorun yaşıyorum. Lütfen biraz sonra tekrar deneyin.",
+          "Bağlantı sorunu nedeniyle yanıt veremiyorum. Kısa süre sonra tekrar deneyin.",
+          "Teknik bir problem var. Lütfen daha sonra tekrar sorunuzu sorun."
+        ],
+        en: [
+          "Sorry, I'm experiencing a technical issue right now. Please try again later.",
+          "I can't respond due to a connection issue. Please try again in a moment.",
+          "There's a technical problem. Please ask your question again later."
+        ]
+      };
+      
+      const fallbackResponse = fallbackResponses[language][Math.floor(Math.random() * 3)];
+      
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: fallbackResponse,
+        isUser: false,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
