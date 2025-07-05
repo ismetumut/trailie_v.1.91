@@ -1,8 +1,12 @@
 import OpenAI from 'openai';
 
+// Prevent import on client-side
+if (typeof window !== 'undefined') {
+  throw new Error('lib/openai.ts should never be imported on the client!');
+}
+
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true // Note: In production, use API routes instead
+  apiKey: process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY
 });
 
 export interface PersonalityResult {
