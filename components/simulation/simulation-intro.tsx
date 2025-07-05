@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Briefcase, Target, Presentation, FileText } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SimulationIntroProps {
   onStart: () => void;
@@ -13,6 +14,8 @@ interface SimulationIntroProps {
 
 export default function SimulationIntro({ onStart, language }: SimulationIntroProps) {
   const [isStarting, setIsStarting] = useState(false);
+  const { user } = useAuth();
+  const [isFromFlow, setIsFromFlow] = useState(false);
 
   const content = {
     tr: {
@@ -69,6 +72,13 @@ export default function SimulationIntro({ onStart, language }: SimulationIntroPr
 
   const currentContent = content[language === "en" ? "en" : "tr"];
 
+  useEffect(() => {
+    // Akış kontrolü - URL'den veya localStorage'dan kontrol et
+    const fromFlow = localStorage.getItem('fromSimulationFlow') === 'true' || 
+                     window.location.search.includes('from=flow');
+    setIsFromFlow(fromFlow);
+  }, []);
+
   const handleStart = () => {
     setIsStarting(true);
     setTimeout(() => {
@@ -83,19 +93,27 @@ export default function SimulationIntro({ onStart, language }: SimulationIntroPr
         <div className="text-center space-y-2">
           <Badge variant="secondary" className="bg-teal-100 text-teal-800">
             <Briefcase className="w-4 h-4 mr-2" />
-            {currentContent.subtitle}
+            {isFromFlow && user ? currentContent.subtitle : "Rol Simülasyonu"}
           </Badge>
-          <h1 className="text-3xl font-bold text-gray-900">{currentContent.title}</h1>
-          <p className="text-lg text-gray-600">{currentContent.welcome}</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isFromFlow && user ? currentContent.title : "Rol Simülasyonu"}
+          </h1>
+          <p className="text-lg text-gray-600">
+            {isFromFlow && user ? currentContent.welcome : "Farklı rollerde deneyim kazanın"}
+          </p>
         </div>
 
         {/* Role Card */}
         <Card className="border-teal-200 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-teal-800">{currentContent.role}</CardTitle>
+            <CardTitle className="text-teal-800">
+              {isFromFlow && user ? currentContent.role : "Simülasyon Rolü"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-700 leading-relaxed">{currentContent.description}</p>
+            <p className="text-gray-700 leading-relaxed">
+              {isFromFlow && user ? currentContent.description : "Seçtiğiniz rolde gerçekçi senaryolar üzerinde çalışarak deneyim kazanacaksınız."}
+            </p>
           </CardContent>
         </Card>
 

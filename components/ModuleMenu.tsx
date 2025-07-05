@@ -53,7 +53,7 @@ const premiumModules = ['expertise', 'role', 'simulation', 'cv', 'jobs', 'interv
     }
   };
 
-export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premiumUnlocked = false, onUnlockPremium }: { onSelect?: (key: string) => void, drawerOnly?: boolean, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
+export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premiumUnlocked = true, onUnlockPremium }: { onSelect?: (key: string) => void, drawerOnly?: boolean, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
   const { user, userType } = useAuth();
   const { language } = useLanguage();
   const t = TEXT[language];
@@ -77,6 +77,12 @@ export default function ModuleMenu({ onSelect, drawerOnly, onViewPackages, premi
                     onUnlockPremium?.();
                     setTimeout(() => onSelect?.(mod.key), 0);
                   } else if (isUnlocked) {
+                    // İş ilanları ve simülasyon için localStorage'ı temizle (hamburger menüden geldiğini belirt)
+                    if (mod.key === 'jobs') {
+                      localStorage.removeItem('fromJobFlow');
+                    } else if (mod.key === 'simulation') {
+                      localStorage.removeItem('fromSimulationFlow');
+                    }
                     onSelect?.(mod.key);
                   }
                 }}

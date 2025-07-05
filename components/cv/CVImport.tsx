@@ -184,30 +184,64 @@ export default function CVImport({
         </CardHeader>
         <CardContent className="flex flex-col gap-6">
           {!importMethod ? (
-            <div className="flex flex-col gap-4">
-              <Button
-                variant="outline"
-                className="flex items-center justify-center gap-3 py-6 text-base font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-blue-700 border-blue-200 hover:bg-blue-50 w-full max-w-full"
+            <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', boxSizing: 'border-box', padding: '0 8px', overflowX: 'hidden' }}>
+              <button
+                style={{
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  fontSize: '0.95rem',
+                  padding: '0.75rem 1rem',
+                  textAlign: 'center',
+                  background: '#f0f9ff',
+                  color: '#2563eb',
+                  borderRadius: '1rem',
+                  border: '1px solid #bfdbfe',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                  fontWeight: 600,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
                 onClick={() => setImportMethod("linkedin")}
               >
-                <img src="/linkedin.svg" alt="LinkedIn" className="w-6 h-6 shrink-0" />
-                <div className="flex flex-col text-left min-w-0 w-full">
-                  <div className="font-bold break-words whitespace-normal leading-tight">{t.linkedinTitle}</div>
-                  <div className="text-xs text-gray-600 break-words whitespace-normal leading-tight">{t.linkedinDesc}</div>
-                </div>
-              </Button>
-              <div className="text-center text-gray-400">- {t.or} -</div>
-              <Button
-                variant="outline"
-                className="flex items-center justify-center gap-3 py-6 text-base font-semibold rounded-xl shadow transition-all duration-200 bg-white/80 text-green-700 border-green-200 hover:bg-green-50 w-full max-w-full"
+                <img src="/linkedin.svg" alt="LinkedIn" style={{ width: 24, height: 24, marginBottom: 2 }} />
+                <span style={{ fontWeight: 700 }}>{t.linkedinTitle}</span>
+                <span style={{ fontSize: '0.92rem', color: '#64748b', fontWeight: 400, marginTop: 2 }}>{t.linkedinDesc}</span>
+              </button>
+              <div className="text-center text-gray-400 my-2">- {t.or} -</div>
+              <button
+                style={{
+                  width: '100%',
+                  maxWidth: '100%',
+                  boxSizing: 'border-box',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                  fontSize: '0.95rem',
+                  padding: '0.75rem 1rem',
+                  textAlign: 'center',
+                  background: '#f0fdf4',
+                  color: '#16a34a',
+                  borderRadius: '1rem',
+                  border: '1px solid #bbf7d0',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                  fontWeight: 600,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
                 onClick={() => setImportMethod("file")}
               >
-                <img src="/upload.svg" alt="Upload" className="w-6 h-6 shrink-0" />
-                <div className="flex flex-col text-left min-w-0 w-full">
-                  <div className="font-bold break-words whitespace-normal leading-tight">{t.fileTitle}</div>
-                  <div className="text-xs text-gray-600 break-words whitespace-normal leading-tight">{t.fileDesc}</div>
-                </div>
-              </Button>
+                <Upload style={{ width: 24, height: 24, marginBottom: 2 }} />
+                <span style={{ fontWeight: 700 }}>{t.fileTitle}</span>
+                <span style={{ fontSize: '0.92rem', color: '#64748b', fontWeight: 400, marginTop: 2 }}>{t.fileDesc}</span>
+              </button>
             </div>
           ) : importMethod === "linkedin" ? (
             <div className="space-y-4">

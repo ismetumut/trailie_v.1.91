@@ -8,7 +8,7 @@ import ModuleMenu from "@/components/ModuleMenu";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
-export default function TopBar({ onModuleSelect, onBack, onViewPackages, premiumUnlocked, onUnlockPremium }: { onModuleSelect?: (key: string) => void, onBack?: () => void, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
+export default function TopBar({ onModuleSelect, onBack, onViewPackages, premiumUnlocked = true, onUnlockPremium }: { onModuleSelect?: (key: string) => void, onBack?: () => void, onViewPackages?: () => void, premiumUnlocked?: boolean, onUnlockPremium?: () => void }) {
   const { user, userType } = useAuth();
   const router = useRouter();
   const { language, setLanguage } = useLanguage();

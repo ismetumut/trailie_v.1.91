@@ -16,25 +16,26 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Başlangıçta false
   const [userType, setUserType] = useState<'individual' | 'company' | null>(null);
 
   useEffect(() => {
-    try {
+    setLoading(false); // Hemen false yap
+    
+    // Firebase auth varsa auth state change'i dinle
+    if (auth) {
       const unsubscribe = onAuthStateChange((user) => {
         setUser(user);
         setLoading(false);
       });
-
+      
       return () => {
         if (typeof unsubscribe === 'function') {
           unsubscribe();
         }
       };
-    } catch (error) {
-      console.warn('Firebase auth not available, using demo mode');
-      setLoading(false);
     }
+    // Firebase yoksa zaten loading false
   }, []);
 
   const isAuthenticated = !!user || !!userType; // Demo mode için userType da kontrol et

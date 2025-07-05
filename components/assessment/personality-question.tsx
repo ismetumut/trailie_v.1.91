@@ -70,59 +70,43 @@ const DISC_DESCRIPTIONS = {
   }
 };
 
-// Yeni 36 soruluk DISC envanteri örnek veri (tamamı ayrı dosyada tutulabilir)
+// 31 soruluk güncel DISC envanteri (id: 4, 5, 7, 11, 12 hariç tüm orijinal sorular buraya eklenecek)
 const DISC_QUESTIONS: DISCQuestion[] = [
+  // id: 1
   {
     id: 1,
-    text: { tr: "Aşağıdakilerden hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you?" },
+    text: { tr: "Yeni bir projeye başlarken hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when starting a new project?" },
     options: [
-      { text: { tr: "Yeni insanlarla tanışmayı severim.", en: "I enjoy meeting new people." }, tag: "I" },
-      { text: { tr: "Güvenilir ve istikrarlıyımdır.", en: "I am dependable and steady." }, tag: "S" },
-      { text: { tr: "Sonuç almak ve yönlendirmek isterim.", en: "I like to take charge and get results." }, tag: "D" },
-      { text: { tr: "Her şeyde doğruluk ve kalite ararım.", en: "I like accuracy and quality in everything." }, tag: "C" }
+      { text: { tr: "Hedefe hızlıca ulaşmak isterim.", en: "I want to reach the goal quickly." }, tag: 'D' },
+      { text: { tr: "Takımın motivasyonunu artırırım.", en: "I increase the team's motivation." }, tag: 'I' },
+      { text: { tr: "Düzenli ve planlı ilerlerim.", en: "I proceed in an organized and planned way." }, tag: 'C' },
+      { text: { tr: "Uyumlu ve destekleyici olurum.", en: "I am cooperative and supportive." }, tag: 'S' }
     ]
   },
+  // id: 2
   {
     id: 2,
-    text: { tr: "Aşağıdakilerden hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you?" },
+    text: { tr: "Bir ekip çalışmasında seni en çok ve en az tanımlayan özellik hangisi?", en: "Which of the following best and least describes you in teamwork?" },
     options: [
-      { text: { tr: "Coşkulu ve iyimserim.", en: "I am enthusiastic and optimistic." }, tag: "I" },
-      { text: { tr: "Hızlı karar vermekte rahatım.", en: "I am comfortable making quick decisions." }, tag: "D" },
-      { text: { tr: "Sabırlı ve iyi bir dinleyiciyim.", en: "I am patient and a good listener." }, tag: "S" },
-      { text: { tr: "İşimde dikkatli ve titizim.", en: "I am careful and precise in my work." }, tag: "C" }
+      { text: { tr: "Liderliği üstlenirim.", en: "I take the lead." }, tag: 'D' },
+      { text: { tr: "Takımın moralini yüksek tutarım.", en: "I keep the team's morale high." }, tag: 'I' },
+      { text: { tr: "Kurallara ve plana sadık kalırım.", en: "I stick to rules and plans." }, tag: 'C' },
+      { text: { tr: "Destekleyici ve sabırlı olurum.", en: "I am supportive and patient." }, tag: 'S' }
     ]
   },
+  // id: 3
   {
     id: 3,
-    text: { tr: "Aşağıdakilerden hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you?" },
+    text: { tr: "Bir sorunla karşılaştığında hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you when facing a problem?" },
     options: [
-      { text: { tr: "Takımım için destekleyici ve sadığım.", en: "I am supportive and loyal to my team." }, tag: "S" },
-      { text: { tr: "İlham vermeyi ve motive etmeyi severim.", en: "I like to inspire and motivate others." }, tag: "I" },
-      { text: { tr: "Düşüncelerimde direkt ve kendime güvenliyim.", en: "I am direct and confident in my opinions." }, tag: "D" },
-      { text: { tr: "Kurallara ve prosedürlere uymayı tercih ederim.", en: "I prefer to follow rules and procedures." }, tag: "C" }
+      { text: { tr: "Hızlıca çözüm üretirim.", en: "I quickly produce a solution." }, tag: 'D' },
+      { text: { tr: "Başkalarını motive ederim.", en: "I motivate others." }, tag: 'I' },
+      { text: { tr: "Detaylı analiz yaparım.", en: "I analyze details thoroughly." }, tag: 'C' },
+      { text: { tr: "Süreci sabırla takip ederim.", en: "I patiently follow the process." }, tag: 'S' }
     ]
   },
-  {
-    id: 4,
-    text: { tr: "Aşağıdakilerden hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you?" },
-    options: [
-      { text: { tr: "Detayları bitirmeden önce iki kez kontrol ederim.", en: "I double-check details before finishing tasks." }, tag: "C" },
-      { text: { tr: "Zorlukların üstesinden gelmeyi severim.", en: "I enjoy overcoming challenges." }, tag: "D" },
-      { text: { tr: "Dikkat çekmeyi severim.", en: "I like to be the center of attention." }, tag: "I" },
-      { text: { tr: "Uyum ve işbirliğine değer veririm.", en: "I value harmony and cooperation." }, tag: "S" }
-    ]
-  },
-  {
-    id: 5,
-    text: { tr: "Aşağıdakilerden hangisi seni en çok ve en az tanımlar?", en: "Which of the following best and least describes you?" },
-    options: [
-      { text: { tr: "Düzenli ve sistemliyim.", en: "I am organized and systematic." }, tag: "C" },
-      { text: { tr: "Kararlı ve iddialıyım.", en: "I am assertive and determined." }, tag: "D" },
-      { text: { tr: "Dışa dönük ve konuşkanım.", en: "I am outgoing and talkative." }, tag: "I" },
-      { text: { tr: "Sakin ve dengeliyim.", en: "I am calm and even-tempered." }, tag: "S" }
-    ]
-  },
-  // ... 31 more soru, aynı formatta, D/I/S/C ve tr/en metinlerle doldurulacak ...
+  // id: 6-36 (id: 4, 5, 7, 11, 12 hariç tüm orijinal sorular buraya eklenecek)
+  // ...
 ];
 
 export function PersonalityQuestion({

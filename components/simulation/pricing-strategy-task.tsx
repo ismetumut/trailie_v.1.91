@@ -25,7 +25,6 @@ interface PricingStrategyTaskProps {
 export default function PricingStrategyTask({ onComplete, language = "tr" }: PricingStrategyTaskProps) {
   const [selectedStrategy, setSelectedStrategy] = useState<string>("");
   const [customPrice, setCustomPrice] = useState<string>("");
-  const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const content = {
@@ -136,7 +135,11 @@ export default function PricingStrategyTask({ onComplete, language = "tr" }: Pri
   const handleSubmit = () => {
     setIsSubmitting(true);
     setTimeout(() => {
-      setShowResult(true);
+      onComplete({
+        strategy: selectedStrategy,
+        customPrice: customPrice,
+        recommendedPrice: "55 TL"
+      });
       setIsSubmitting(false);
     }, 1500);
   };
@@ -148,48 +151,6 @@ export default function PricingStrategyTask({ onComplete, language = "tr" }: Pri
       recommendedPrice: "55 TL"
     });
   };
-
-  if (showResult) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-4">
-        <div className="max-w-2xl mx-auto space-y-6">
-          <div className="text-center space-y-2">
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              <CheckCircle className="w-4 h-4 mr-2" />
-              {language === "tr" ? "Tamamlandı" : "Completed"}
-            </Badge>
-            <h1 className="text-2xl font-bold text-gray-900">{currentContent.result.title}</h1>
-          </div>
-
-          <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Target className="w-5 h-5 text-green-600" />
-                  <h3 className="font-semibold text-gray-900">{currentContent.result.recommendation}</h3>
-                </div>
-                <p className="text-gray-700">{currentContent.result.reasoning}</p>
-                <div className="bg-mint-50 p-4 rounded-lg">
-                  <p className="text-sm text-gray-600">{currentContent.result.nextTask}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <Button
-              onClick={handleContinue}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-3 text-lg font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              size="lg"
-            >
-              <ArrowRight className="w-5 h-5 mr-2" />
-              {currentContent.nextButton}
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-mint-50 to-teal-50 p-4">

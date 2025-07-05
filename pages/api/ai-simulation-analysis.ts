@@ -1,176 +1,72 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { OpenAI } from 'openai';
+
+const openai = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { userData, language = 'tr' } = req.body;
+  const { title, description, steps, answers, language } = req.body;
+  if (!title || !description || !steps || !answers || !language) {
+    return res.status(400).json({ error: 'Eksik veri' });
+  }
 
-  if (!userData) {
-    return res.status(400).json({ error: 'User data is required' });
+  let prompt = '';
+  if (language === 'tr') {
+    prompt = `Aşağıda bir simülasyon senaryosu, görev adımları ve bir kullanıcının açık uçlu sorulara verdiği yanıtlar var. Lütfen bu yanıtları analiz et ve aşağıdaki formatta JSON olarak dön:
+{
+  "strengths": ["..."],
+  "weaknesses": ["..."],
+  "trainings": [
+    { "title": "...", "platform": "Coursera/Udemy/LinkedIn Learning", "url": "..." }
+  ]
+}
+Senaryo Başlığı: ${title}
+Açıklama: ${description}
+Görev Adımları: ${steps.map((s: string, i: number) => `${i+1}. ${s}`).join('\n')}
+Kullanıcı Yanıtları: ${answers.map((a: string, i: number) => `Soru ${i+1}: ${a}`).join('\n')}
+Yanıtları analiz et, güçlü yönleri, gelişim alanlarını ve en az 2 eğitim önerisini (ve platform linkiyle) ver.`;
+  } else {
+    prompt = `Below is a simulation scenario, task steps, and a user's answers to open-ended questions. Please analyze these answers and return a JSON in the following format:
+{
+  "strengths": ["..."],
+  "weaknesses": ["..."],
+  "trainings": [
+    { "title": "...", "platform": "Coursera/Udemy/LinkedIn Learning", "url": "..." }
+  ]
+}
+Scenario Title: ${title}
+Description: ${description}
+Task Steps: ${steps.map((s: string, i: number) => `${i+1}. ${s}`).join('\n')}
+User Answers: ${answers.map((a: string, i: number) => `Q${i+1}: ${a}`).join('\n')}
+Analyze the answers, list strengths, development areas, and at least 2 training suggestions (with platform links).`;
   }
 
   try {
-    const systemPrompt = language === 'tr'
-      ? `Sen bir kariyer danışmanı ve kişisel gelişim uzmanısın. Kullanıcının DISC kişilik testi, uzmanlık analizi, değerlendirme ve simülasyon sonuçlarını analiz ederek detaylı bir gelişim raporu hazırla.
-      
-      Analiz şunları içermeli:
-      - Güçlü yönler (en az 3 madde)
-      - Gelişime açık alanlar (en az 2 madde)
-      - AI analiz yorumu (2-3 cümle)
-      - Eğitim önerileri (en az 2 alan için somut kaynaklar)
-      - Radar grafik için 6 farklı yetkinlik skoru (0-100 arası)
-      
-      Yanıtını JSON formatında ver:
-      {
-        "strengths": ["madde1", "madde2", "madde3"],
-        "devAreas": ["madde1", "madde2"],
-        "aiAnalysis": "analiz metni",
-        "recommendations": [
-          {
-            "area": "Alan adı",
-            "links": [
-              {"label": "Kurs adı", "url": "https://example.com"}
-            ]
-          }
-        ],
-        "radar": [
-          {"skill": "Yetkinlik1", "value": 85},
-          {"skill": "Yetkinlik2", "value": 75}
-        ]
-      }`
-      : `You are a career coach and personal development expert. Analyze the user's DISC personality test, expertise analysis, assessment and simulation results to prepare a detailed development report.
-      
-      Analysis should include:
-      - Strengths (at least 3 items)
-      - Development areas (at least 2 items)
-      - AI analysis comment (2-3 sentences)
-      - Learning recommendations (concrete resources for at least 2 areas)
-      - 6 different competency scores for radar chart (0-100 scale)
-      
-      Respond in JSON format:
-      {
-        "strengths": ["item1", "item2", "item3"],
-        "devAreas": ["item1", "item2"],
-        "aiAnalysis": "analysis text",
-        "recommendations": [
-          {
-            "area": "Area name",
-            "links": [
-              {"label": "Course name", "url": "https://example.com"}
-            ]
-          }
-        ],
-        "radar": [
-          {"skill": "Competency1", "value": 85},
-          {"skill": "Competency2", "value": 75}
-        ]
-      }`;
-
-    const userPrompt = language === 'tr'
-      ? `Kullanıcı verileri:
-      
-      DISC Sonuçları: ${JSON.stringify(userData.discResults || {})}
-      Uzmanlık Sonuçları: ${JSON.stringify(userData.expertiseResults || {})}
-      Değerlendirme Sonuçları: ${JSON.stringify(userData.assessmentResults || {})}
-      Simülasyon Sonuçları: ${JSON.stringify(userData.simulationResults || {})}
-      
-      Bu verileri analiz et ve yukarıdaki formatta JSON yanıtı ver.`
-      : `User data:
-      
-      DISC Results: ${JSON.stringify(userData.discResults || {})}
-      Expertise Results: ${JSON.stringify(userData.expertiseResults || {})}
-      Assessment Results: ${JSON.stringify(userData.assessmentResults || {})}
-      Simulation Results: ${JSON.stringify(userData.simulationResults || {})}
-      
-      Analyze this data and provide JSON response in the format above.`;
-
-    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        max_tokens: 800,
-        temperature: 0.3,
-      }),
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        { role: 'system', content: 'You are a career coach and training advisor.' },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.7,
     });
-
-    if (!openaiRes.ok) {
-      throw new Error('OpenAI API error');
+    const response = completion.choices[0]?.message?.content;
+    if (response) {
+      try {
+        const jsonStart = response.indexOf('{');
+        const jsonEnd = response.lastIndexOf('}') + 1;
+        const jsonString = response.substring(jsonStart, jsonEnd);
+        const parsed = JSON.parse(jsonString);
+        return res.status(200).json(parsed);
+      } catch (e) {
+        return res.status(200).json({ raw: response, error: 'AI yanıtı JSON parse edilemedi.' });
+      }
     }
-
-    const data = await openaiRes.json();
-    const aiResponse = data.choices?.[0]?.message?.content || '';
-
-    // Parse JSON response from AI
-    let parsedAnalysis;
-    try {
-      parsedAnalysis = JSON.parse(aiResponse);
-    } catch (parseError) {
-      // Fallback to default structure if parsing fails
-      parsedAnalysis = {
-        strengths: language === 'tr' 
-          ? ['İletişim becerileri', 'Analitik düşünme', 'Takım çalışması']
-          : ['Communication skills', 'Analytical thinking', 'Teamwork'],
-        devAreas: language === 'tr'
-          ? ['Teknik yetkinlikler', 'Liderlik becerileri']
-          : ['Technical competencies', 'Leadership skills'],
-        aiAnalysis: language === 'tr'
-          ? 'Kullanıcının güçlü iletişim becerileri ve analitik düşünme yeteneği öne çıkıyor. Teknik alanlarda gelişim potansiyeli var.'
-          : 'User shows strong communication skills and analytical thinking. There is potential for development in technical areas.',
-        recommendations: language === 'tr' ? [
-          {
-            area: 'Teknik Yetkinlikler',
-            links: [
-              { label: 'Coursera: Data Science', url: 'https://www.coursera.org/specializations/data-science' },
-              { label: 'Udemy: Python Programming', url: 'https://www.udemy.com/course/python-programming/' }
-            ]
-          },
-          {
-            area: 'Liderlik Becerileri',
-            links: [
-              { label: 'LinkedIn Learning: Leadership', url: 'https://linkedin.com/learning/leadership' },
-              { label: 'Harvard Business Review', url: 'https://hbr.org/topic/leadership' }
-            ]
-          }
-        ] : [
-          {
-            area: 'Technical Competencies',
-            links: [
-              { label: 'Coursera: Data Science', url: 'https://www.coursera.org/specializations/data-science' },
-              { label: 'Udemy: Python Programming', url: 'https://www.udemy.com/course/python-programming/' }
-            ]
-          },
-          {
-            area: 'Leadership Skills',
-            links: [
-              { label: 'LinkedIn Learning: Leadership', url: 'https://linkedin.com/learning/leadership' },
-              { label: 'Harvard Business Review', url: 'https://hbr.org/topic/leadership' }
-            ]
-          }
-        ],
-        radar: [
-          { skill: language === 'tr' ? 'İletişim' : 'Communication', value: 85 },
-          { skill: language === 'tr' ? 'Problem Çözme' : 'Problem Solving', value: 78 },
-          { skill: language === 'tr' ? 'Teknik Yetenek' : 'Technical Skills', value: 72 },
-          { skill: language === 'tr' ? 'Takım Çalışması' : 'Teamwork', value: 88 },
-          { skill: language === 'tr' ? 'Analitik Düşünme' : 'Analytical Thinking', value: 75 },
-          { skill: language === 'tr' ? 'Liderlik' : 'Leadership', value: 70 }
-        ]
-      };
-    }
-
-    res.status(200).json({ analysis: parsedAnalysis });
+    return res.status(500).json({ error: 'AI yanıtı alınamadı.' });
   } catch (error) {
-    console.error('AI Simulation Analysis error:', error);
-    res.status(500).json({ error: 'AI analysis failed' });
+    return res.status(500).json({ error: 'OpenAI hatası', detail: (error as any).message });
   }
 } 

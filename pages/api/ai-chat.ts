@@ -38,6 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (!openaiRes.ok) {
+      const errorText = await openaiRes.text();
+      console.error('OpenAI API error details:', errorText);
       throw new Error('OpenAI API error');
     }
 

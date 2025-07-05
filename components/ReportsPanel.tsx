@@ -1,10 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { User, Award, BarChart3 } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
+import { getUserReports } from '@/lib/firebase';
 
 const content = {
   tr: {
@@ -106,16 +108,39 @@ interface ReportsPanelProps {
 
 export default function ReportsPanel({ language = "tr" }: ReportsPanelProps) {
   const t = content[language];
-  const [open, setOpen] = useState<null | "disc" | "expertise" | "assessment">(null);
+  const { user } = useAuth();
+  const [open, setOpen] = useState<string | null>(null);
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const reportData: ReportData | null =
-    open === "disc"
-      ? t.discReport
-      : open === "expertise"
-      ? t.expertiseReport
-      : open === "assessment"
-      ? t.assessmentReport
-      : null;
+  useEffect(() => {
+    if (user && user.uid) {
+      setLoading(true);
+      getUserReports(user.uid)
+        .then(setReports)
+        .finally(() => setLoading(false));
+    }
+  }, [user]);
+
+  const selectedReport = reports.find(r => r.id === open);
+
+  const getReportTitle = (report: any) => {
+    if (report.type === 'personality') return language === 'tr' ? 'DISC Raporu' : 'DISC Report';
+    if (report.type === 'expertise') return language === 'tr' ? 'Uzmanlık Raporu' : 'Expertise Report';
+    if (report.type === 'simulation') return language === 'tr' ? 'Simülasyon Raporu' : 'Simulation Report';
+    if (report.type === 'interview') return language === 'tr' ? 'Mülakat Raporu' : 'Interview Report';
+    if (report.type === 'assessment') return language === 'tr' ? 'Assessment Raporu' : 'Assessment Report';
+    return language === 'tr' ? 'AI Raporu' : 'AI Report';
+  };
+
+  const getReportIcon = (report: any) => {
+    if (report.type === 'personality') return '🧠';
+    if (report.type === 'expertise') return '🎯';
+    if (report.type === 'simulation') return '🎮';
+    if (report.type === 'interview') return '🎤';
+    if (report.type === 'assessment') return '📊';
+    return '🤖';
+  };
 
   return (
     <Card className="bg-gradient-to-br from-green-50 to-emerald-50/60 shadow-xl rounded-2xl p-4 border-0">
@@ -124,65 +149,65 @@ export default function ReportsPanel({ language = "tr" }: ReportsPanelProps) {
         <CardTitle className="text-xl font-bold tracking-tight text-gray-900">{t.title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-wrap gap-3 mb-6 justify-center">
-          <Button
-            variant={open === "disc" ? "default" : "outline"}
-            onClick={() => setOpen("disc")}
-            className={`rounded-full px-6 py-2 font-semibold shadow transition-all duration-200 ${open === "disc" ? 'bg-gradient-to-r from-yellow-400 to-yellow-200 text-gray-900' : 'bg-white/80 text-yellow-700 border-yellow-200 hover:bg-yellow-50'}`}
-          >
-            <Award className="w-5 h-5 mr-2 text-yellow-500" /> {t.disc}
-          </Button>
-          <Button
-            variant={open === "expertise" ? "default" : "outline"}
-            onClick={() => setOpen("expertise")}
-            className={`rounded-full px-6 py-2 font-semibold shadow transition-all duration-200 ${open === "expertise" ? 'bg-gradient-to-r from-green-400 to-green-200 text-gray-900' : 'bg-white/80 text-green-700 border-green-200 hover:bg-green-50'}`}
-          >
-            <Award className="w-5 h-5 mr-2 text-green-500" /> {t.expertise}
-          </Button>
-          <Button
-            variant={open === "assessment" ? "default" : "outline"}
-            onClick={() => setOpen("assessment")}
-            className={`rounded-full px-6 py-2 font-semibold shadow transition-all duration-200 ${open === "assessment" ? 'bg-gradient-to-r from-purple-400 to-pink-200 text-gray-900' : 'bg-white/80 text-purple-700 border-purple-200 hover:bg-purple-50'}`}
-          >
-            <Award className="w-5 h-5 mr-2 text-purple-500" /> {t.assessment}
-          </Button>
-        </div>
-        {reportData && (
+        {loading ? (
+          <div className="text-center text-gray-500">Yükleniyor...</div>
+        ) : reports.length === 0 ? (
+          <div className="text-center text-gray-500">Henüz raporunuz yok.</div>
+        ) : (
+          <div className="flex flex-wrap gap-3 mb-6 justify-center">
+            {reports.map((report) => (
+              <Button
+                key={report.id}
+                variant={open === report.id ? "default" : "outline"}
+                onClick={() => setOpen(report.id)}
+                className="rounded-full px-6 py-2 font-semibold shadow transition-all duration-200"
+              >
+                <span className="mr-2">{getReportIcon(report)}</span>
+                {getReportTitle(report)}
+                <span className="ml-2 text-xs text-gray-500">
+                  {report.createdAt?.toDate?.().toLocaleDateString?.() || 
+                   (report.createdAt instanceof Date ? report.createdAt.toLocaleDateString() : '')}
+                </span>
+              </Button>
+            ))}
+          </div>
+        )}
+        {selectedReport && (
           <Card className="bg-gradient-to-br from-white/90 to-blue-50/80 border-0 shadow-lg rounded-xl p-6 mt-2 w-full max-w-xl mx-auto animate-fade-in">
             <CardHeader className="flex flex-row items-center gap-2 mb-2">
-              <Award className="w-6 h-6 text-yellow-500" />
-              <CardTitle className="text-lg font-semibold text-gray-900">{reportData.title}</CardTitle>
+              <span className="text-2xl">{getReportIcon(selectedReport)}</span>
+              <CardTitle className="text-lg font-semibold text-gray-900">{getReportTitle(selectedReport)}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-2 text-gray-700 text-base font-medium">{reportData.summary}</div>
+              <div className="mb-2 text-gray-700 text-base font-medium">
+                {selectedReport.summary || selectedReport.aiAnalysis?.summary || selectedReport.results?.summary || ''}
+              </div>
               <div className="mb-4">
-                <span className="font-semibold text-gray-700">{language === "tr" ? "Skor" : "Score"}:</span> <span className="text-indigo-700 font-bold">{reportData.score}/100</span>
-                <Progress value={reportData.score} className="h-2 mt-1 bg-indigo-100" />
+                <span className="font-semibold text-gray-700">{language === "tr" ? "Skor" : "Score"}:</span> 
+                <span className="text-indigo-700 font-bold">
+                  {selectedReport.score || selectedReport.aiAnalysis?.score || selectedReport.results?.score || '-'}/100
+                </span>
+                <Progress 
+                  value={selectedReport.score || selectedReport.aiAnalysis?.score || selectedReport.results?.score || 0} 
+                  className="h-2 mt-1 bg-indigo-100" 
+                />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                 <div>
                   <div className="font-semibold mb-1 text-green-700">{language === "tr" ? "Güçlü Yönler" : "Strengths"}</div>
                   <ul className="list-disc list-inside text-green-700 text-sm space-y-1">
-                    {reportData.strengths.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                    {(selectedReport.strengths || selectedReport.aiAnalysis?.strengths || selectedReport.results?.strengths || []).map((s: string, i: number) => <li key={i}>{s}</li>)}
                   </ul>
                 </div>
                 <div>
                   <div className="font-semibold mb-1 text-red-700">{language === "tr" ? "Gelişim Alanları" : "Development Areas"}</div>
                   <ul className="list-disc list-inside text-red-700 text-sm space-y-1">
-                    {reportData.devAreas.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                    {(selectedReport.devAreas || selectedReport.aiAnalysis?.devAreas || selectedReport.results?.devAreas || selectedReport.weaknesses || []).map((s: string, i: number) => <li key={i}>{s}</li>)}
                   </ul>
                 </div>
               </div>
-              {reportData.spider && (
-                <div className="my-6">
-                  <div className="font-semibold text-center mb-2 text-blue-700">{language === "tr" ? "Yetenek Profili (Spider Grafiği)" : "Skill Profile (Spider Chart)"}</div>
-                  <div className="text-center text-gray-600 text-sm">
-                    {language === "tr" ? "Grafik yükleniyor..." : "Chart loading..."}
-                  </div>
-                </div>
-              )}
               <div className="mt-4 text-gray-600 text-sm whitespace-pre-line">
-                {reportData.details}
+                {selectedReport.details || selectedReport.aiAnalysis?.details || selectedReport.results?.details || ''}
               </div>
               <div className="flex justify-center mt-6">
                 <Button className="rounded-full px-6 py-2 font-semibold bg-gradient-to-r from-gray-200 to-gray-50 text-gray-700 border-0 shadow hover:bg-gray-100" variant="outline" onClick={() => setOpen(null)}>{t.close}</Button>

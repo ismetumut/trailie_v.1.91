@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 import InterviewReview from "./InterviewReview";
+import { useAuth } from "@/contexts/AuthContext";
+import { saveInterviewResult } from "@/lib/firebase";
 
 const content = {
   tr: {
@@ -42,6 +44,7 @@ const dummyQuestions = [
 
 export default function MockInterview({ language = "tr", onFinish }: { language?: "tr" | "en"; onFinish?: (answers: string[]) => void }) {
   const t = content[language];
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>(Array(dummyQuestions.length).fill(""));
   const [loading, setLoading] = useState(false);
@@ -76,6 +79,22 @@ export default function MockInterview({ language = "tr", onFinish }: { language?
 
       const data = await response.json();
       setReview(data.review);
+      
+      // Firestore'a kaydet
+      if (user && user.uid) {
+        try {
+          await saveInterviewResult(user.uid, {
+            answers,
+            role: 'Pricing Specialist',
+            language,
+            review: data.review,
+            questions: dummyQuestions,
+            completedAt: new Date()
+          });
+        } catch (e) {
+          console.error('Failed to save interview result:', e);
+        }
+      }
     } catch (error) {
       console.error('Interview evaluation error:', error);
       // Fallback to dummy review if API fails

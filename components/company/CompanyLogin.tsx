@@ -40,6 +40,7 @@ const content = {
     register: "Kayıt Ol",
     or: "veya",
     packages: "Abonelik Paketleri",
+    demoMode: "Demo Modu - Herhangi bir bilgi ile giriş yapabilirsiniz",
     monthly: {
       title: "Aylık Paket",
       price: "9.999 TL",
@@ -81,6 +82,7 @@ const content = {
     register: "Register",
     or: "or",
     packages: "Subscription Packages",
+    demoMode: "Demo Mode - You can login with any information",
     monthly: {
       title: "Monthly Package",
       price: "$999",
@@ -121,22 +123,26 @@ export function CompanyLogin({ onLogin, language = 'en', onLanguageChange }: Com
   const [selectedPackage, setSelectedPackage] = useState<'monthly' | 'annual' | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
 
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      alert(language === 'tr' ? 'Lütfen tüm alanları doldurun' : 'Please fill all fields');
-      return;
-    }
-    onLogin({ email, password, package: selectedPackage });
+    // Demo mode - direct login without validation
+    onLogin({ 
+      email: email || 'demo@company.com', 
+      password: password || 'demo123', 
+      package: selectedPackage || 'monthly' 
+    });
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || !selectedPackage) {
-      alert(language === 'tr' ? 'Lütfen tüm alanları doldurun ve bir paket seçin' : 'Please fill all fields and select a package');
-      return;
-    }
-    onLogin({ email, password, package: selectedPackage, isNew: true });
+    // Demo mode - direct registration without validation
+    onLogin({ 
+      email: email || 'demo@company.com', 
+      password: password || 'demo123', 
+      package: selectedPackage || 'monthly', 
+      isNew: true 
+    });
   };
 
   return (
@@ -161,6 +167,13 @@ export function CompanyLogin({ onLogin, language = 'en', onLanguageChange }: Com
             </div>
             <CardTitle className="text-2xl lg:text-3xl font-bold text-card-foreground">{t.title}</CardTitle>
             <p className="text-muted-foreground mt-2 text-sm lg:text-base">{t.subtitle}</p>
+            
+            {/* Demo Mode Notice */}
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700 text-center font-medium">
+                {t.demoMode}
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 lg:space-y-6">
             <form onSubmit={isRegistering ? handleRegister : handleLogin} className="space-y-4">

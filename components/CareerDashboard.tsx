@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, RefObject } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ModuleMenu from "./ModuleMenu";
@@ -22,6 +22,7 @@ import OnepagerTask from "./simulation/onepager-task";
 import PresentationTask from "./simulation/presentation-task";
 import AISimulationReport from "./AISimulationReport";
 import InterviewEvaluation from "./interview/InterviewEvaluation";
+import { getUserProgress } from '@/lib/firebase';
 
 export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (key: string) => void }) {
   const { user, userType } = useAuth();
@@ -29,6 +30,10 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
   const [currentView, setCurrentView] = useState<string>("dashboard");
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const reportsRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState<any[]>([]);
+  const [progressLoading, setProgressLoading] = useState(false);
+  const [progressError, setProgressError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   if (!user && !userType) {
     return (
@@ -49,6 +54,16 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
   }
 
   const handleModuleSelect = (moduleKey: string) => {
+    // Sayfa değişikliğinde en üste kaydır
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Akıştan gelen modüller için localStorage'ı set et
+    if (moduleKey === 'jobs') {
+      localStorage.setItem('fromJobFlow', 'true');
+    } else if (moduleKey === 'simulation') {
+      localStorage.setItem('fromSimulationFlow', 'true');
+    }
+    
     setSelectedModule(moduleKey);
     setCurrentView("module");
   };
@@ -60,18 +75,30 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
   const handleBackToDashboard = () => {
     setCurrentView("dashboard");
     setSelectedModule(null);
+    // Ana sayfaya dönüşte en üste kaydır
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Modül yönlendirme fonksiyonu
   const goToModule = (key: string) => {
+    // Sayfa değişikliğinde en üste kaydır
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     if (key === 'assessment' || key === 'expertise') {
       if (onModuleRoute) {
         onModuleRoute(key);
         return;
       }
     }
-    if (key === 'networking' || key === 'coaching') {
-      handleViewPackages();
+    if (key === 'networking' || key === 'coaching' || key === 'premium') {
+      if (onModuleRoute) {
+        onModuleRoute(key);
+        return;
+      } else {
+        setSelectedModule(key);
+        setCurrentView('module');
+        return;
+      }
     } else if (key === 'home' || key === 'dashboard') {
       setCurrentView('dashboard');
       setSelectedModule(null);
@@ -82,6 +109,13 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
         reportsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 300);
     } else {
+      // Akıştan gelen modüller için localStorage'ı set et
+      if (key === 'jobs') {
+        localStorage.setItem('fromJobFlow', 'true');
+      } else if (key === 'simulation') {
+        localStorage.setItem('fromSimulationFlow', 'true');
+      }
+      
       setSelectedModule(key);
       setCurrentView('module');
     }
@@ -91,13 +125,25 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
   const renderModuleContent = () => {
     switch (selectedModule) {
       case 'simulation':
-        return <SimulationIntro onStart={() => setSelectedModule('simulation-pricing')} language={language} />;
+        return <SimulationIntro onStart={() => {
+          setSelectedModule('simulation-pricing');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} language={language} />;
       case 'simulation-pricing':
-        return <PricingStrategyTask onComplete={() => setSelectedModule('simulation-onepager')} language={language} />;
+        return <PricingStrategyTask onComplete={() => {
+          setSelectedModule('simulation-onepager');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} language={language} />;
       case 'simulation-onepager':
-        return <OnepagerTask onComplete={() => setSelectedModule('simulation-presentation')} language={language} />;
+        return <OnepagerTask onComplete={() => {
+          setSelectedModule('simulation-presentation');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} language={language} />;
       case 'simulation-presentation':
-        return <PresentationTask onComplete={() => setSelectedModule('simulation-complete')} language={language} />;
+        return <PresentationTask onComplete={() => {
+          setSelectedModule('simulation-complete');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} language={language} />;
       case 'simulation-complete':
         return <AISimulationReport language={language} />;
       case 'cv':
@@ -115,11 +161,28 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
       case 'coaching':
         return <CoachingSession sessionsLeft={1} onBookSession={() => {}} onBuyAdditional={() => {}} />;
       case 'interview':
-        return <InterviewEvaluation language={language} onClose={() => setCurrentView('dashboard')} />;
+        return <InterviewEvaluation language={language} onClose={() => {
+          setCurrentView('dashboard');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }} />;
       default:
         return null;
     }
   };
+
+  useEffect(() => {
+    if (user && user.uid) {
+      setProgressLoading(true);
+      setProgressError(null);
+      getUserProgress(user.uid)
+        .then(setProgress)
+        .catch((e) => {
+          console.warn('Firestore error, using empty progress:', e);
+          setProgress([]);
+        })
+        .finally(() => setProgressLoading(false));
+    }
+  }, [user]);
 
   if (currentView === "packages") {
     return (
@@ -173,7 +236,11 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
                   <div className="bg-muted rounded-full p-3">
                     <UserCircle className="w-12 h-12 text-muted-foreground" />
                   </div>
-                  <div className="text-xl font-bold text-card-foreground">{language === 'tr' ? `Merhaba, ${user?.displayName || user?.email || 'Umut'}!` : `Hello, ${user?.displayName || user?.email || 'User'}!`}</div>
+                  <div className="text-xl font-bold text-card-foreground">
+                    {language === 'tr'
+                      ? `Merhaba, ${user?.displayName || user?.email || 'Kullanıcı'}!`
+                      : `Hello, ${user?.displayName || user?.email || 'User'}!`}
+                  </div>
                   <div className="text-primary text-xs font-semibold">{language === 'tr' ? 'Profil %85 tamamlandı' : 'Profile 85% complete'}</div>
                   <Progress value={85} className="w-32 h-2 bg-muted" />
                 </div>
@@ -272,6 +339,57 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
                 </div>
               </div>
             </>
+          )}
+          {user && (
+            <div className="mt-8">
+              <h2 className="text-2xl font-bold mb-4">Geçmiş Simülasyonlarınız</h2>
+              {progressLoading && <div className="text-gray-500">Yükleniyor...</div>}
+              {progressError && <div className="text-red-500">{progressError}</div>}
+              {!progressLoading && progress.length === 0 && <div className="text-gray-400">Henüz kayıtlı simülasyonunuz yok.</div>}
+              <div className="grid gap-4 md:grid-cols-2">
+                {progress.map((item) => (
+                  <div key={item.id} className="bg-white rounded-xl shadow p-5 flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-semibold text-lg">{item.simulationTitle}</div>
+                        <div className="text-xs text-gray-500">{item.createdAt?.toDate ? item.createdAt.toDate().toLocaleString() : new Date(item.createdAt).toLocaleString()}</div>
+                      </div>
+                      <Button size="sm" variant="outline" onClick={() => setExpanded(expanded === item.id ? null : item.id)}>
+                        {expanded === item.id ? 'Kapat' : 'Detay'}
+                      </Button>
+                    </div>
+                    <div className="mt-2">
+                      <div className="font-medium text-green-700">Güçlü Yönler:</div>
+                      <ul className="list-disc list-inside ml-4 text-sm">
+                        {item.aiAnalysis?.strengths?.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                      </ul>
+                      <div className="font-medium text-amber-700 mt-2">Gelişim Alanları:</div>
+                      <ul className="list-disc list-inside ml-4 text-sm">
+                        {item.aiAnalysis?.weaknesses?.map((w: string, i: number) => <li key={i}>{w}</li>)}
+                      </ul>
+                    </div>
+                    {expanded === item.id && (
+                      <div className="mt-3 bg-gray-50 rounded p-3">
+                        <div className="font-semibold mb-1">AI Analizi & Eğitim Önerileri</div>
+                        <div className="mb-2">
+                          <span className="font-medium">Eğitimler:</span>
+                          <ul className="list-disc list-inside ml-4 text-sm">
+                            {item.aiAnalysis?.trainings?.map((t: any, i: number) => (
+                              <li key={i}>
+                                <span className="font-medium">{t.title}</span> - <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">{t.platform}</a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="text-gray-700 text-sm whitespace-pre-line">
+                          {JSON.stringify(item.aiAnalysis, null, 2)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </div>
