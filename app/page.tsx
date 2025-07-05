@@ -36,8 +36,6 @@ import MockInterview from '@/components/interview/MockInterview';
 import InterviewEvaluation from '@/components/interview/InterviewEvaluation';
 import { CompanyLogin } from "@/components/company/CompanyLogin";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { generateDiscProfile, generateExpertiseProfile, AIDiscProfile, AIExpertiseProfile } from '@/lib/openai';
-import { generateRoleSimulation, AISimulationScenario } from '@/lib/openai';
 import { saveSimulationResult } from '@/lib/firebase';
 import NetworkingPage from '@/components/networking/NetworkingPage';
 import CoachingPage from '@/components/coaching/CoachingPage';
