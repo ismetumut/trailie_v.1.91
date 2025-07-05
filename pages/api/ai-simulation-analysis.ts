@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { OpenAI } from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -11,6 +11,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { title, description, steps, answers, language } = req.body;
   if (!title || !description || !steps || !answers || !language) {
     return res.status(400).json({ error: 'Eksik veri' });
+  }
+
+  // Demo mode kontrolü
+  const isDemoMode = !process.env.OPENAI_API_KEY && !process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (isDemoMode) {
+    const demoAnalysis = {
+      strengths: ["Demo güçlü yön 1", "Demo güçlü yön 2"],
+      weaknesses: ["Demo gelişim alanı 1", "Demo gelişim alanı 2"],
+      trainings: [
+        { title: "Demo Eğitim 1", platform: "Coursera", url: "https://coursera.org" },
+        { title: "Demo Eğitim 2", platform: "Udemy", url: "https://udemy.com" }
+      ]
+    };
+    return res.status(200).json(demoAnalysis);
   }
 
   let prompt = '';

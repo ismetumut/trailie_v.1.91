@@ -6,6 +6,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const { prompt } = req.body;
+
+  // Demo mode kontrolü
+  const isDemoMode = !process.env.OPENAI_API_KEY && !process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (isDemoMode) {
+    const demoReport = "Bu demo raporu, AI analizi yerine geçici olarak gösterilmektedir. Gerçek OpenAI API anahtarı ile tam özellikli raporlar alabilirsiniz.";
+    return res.status(200).json({ result: demoReport });
+  }
   if (!prompt) {
     return res.status(400).json({ error: 'Prompt is required' });
   }
@@ -15,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',

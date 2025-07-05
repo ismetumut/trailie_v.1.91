@@ -11,6 +11,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Transcripts array is required' });
   }
 
+  // Demo mode kontrolü
+  const isDemoMode = !process.env.OPENAI_API_KEY && !process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (isDemoMode) {
+    const demoReview = {
+      role: role,
+      scores: {
+        fluency: 8.5,
+        technical: 9.0,
+        fit: 8.8,
+        confidence: 7.5,
+        clarity: 8.2,
+        structure: 8.0
+      },
+      strengths: language === 'tr' 
+        ? ['Cevaplarda yapı ve netlik', 'Teknik bilgi seviyesi', 'Rol uyumu']
+        : ['Structure and clarity in answers', 'Technical knowledge level', 'Role fit'],
+      devAreas: language === 'tr'
+        ? ['Daha detaylı örnekler verme', 'Güven ifadesi']
+        : ['Providing more detailed examples', 'Confidence expression'],
+      summary: language === 'tr'
+        ? 'Demo modda gösterilen değerlendirme. Gerçek OpenAI API anahtarı ile tam özellikli analiz alabilirsiniz.'
+        : 'Demo evaluation shown. Get full-featured analysis with real OpenAI API key.',
+      recommendations: language === 'tr'
+        ? ['Daha fazla somut örnek kullanın', 'Güven ifadenizi güçlendirin', 'Cevaplarınızı daha detaylandırın']
+        : ['Use more concrete examples', 'Strengthen your confidence expression', 'Provide more detailed answers'],
+      radar: [
+        { label: language === 'tr' ? 'Sayısal Düşünme' : 'Analytical Thinking', value: 85 },
+        { label: language === 'tr' ? 'İletişim' : 'Communication', value: 75 },
+        { label: language === 'tr' ? 'Veri Kullanımı' : 'Data Usage', value: 80 },
+        { label: language === 'tr' ? 'Rol Uyumu' : 'Role Fit', value: 85 },
+        { label: language === 'tr' ? 'Müzakere' : 'Negotiation', value: 70 }
+      ]
+    };
+    return res.status(200).json({ review: demoReview });
+  }
+
   try {
     // Create comprehensive prompt for AI analysis
     const systemPrompt = language === 'tr' 
@@ -71,7 +107,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gpt-4',

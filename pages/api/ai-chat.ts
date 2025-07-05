@@ -7,6 +7,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { message, language = 'tr', conversationHistory = [] } = req.body;
 
+  // Demo mode kontrolü
+  const isDemoMode = !process.env.OPENAI_API_KEY && !process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+  if (isDemoMode) {
+    const demoResponses: { [key: string]: string[] } = {
+      tr: [
+        "Merhaba! Kariyer yolculuğunuzda size nasıl yardımcı olabilirim?",
+        "CV'nizi güncellemek için hangi alanlarda gelişmek istiyorsunuz?",
+        "Mülakat hazırlığı için hangi pozisyonu hedefliyorsunuz?",
+        "Networking için hangi sektörde bağlantı kurmak istiyorsunuz?"
+      ],
+      en: [
+        "Hello! How can I help you with your career journey?",
+        "What areas would you like to improve in your CV?",
+        "What position are you targeting for interview preparation?",
+        "Which industry would you like to network in?"
+      ]
+    };
+    
+    const responses = demoResponses[language] || demoResponses.tr;
+    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    return res.status(200).json({ response: randomResponse });
+  }
+
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
@@ -27,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
