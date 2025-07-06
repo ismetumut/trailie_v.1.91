@@ -1410,16 +1410,25 @@ function RoleSimulationScreen({ role, language, onBack }: { role: any, language:
     setAnswers(['', '', '']);
     setAiLoading(false);
     setAiError(null);
-    generateRoleSimulation(
-      role.title,
-      role.description,
-      language as 'tr' | 'en'
-    )
-      .then((result) => {
+    // generateRoleSimulation yerine API route'a fetch ile istek at
+    fetch('/api/ai-role-simulation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        roleTitle: role.title,
+        roleDescription: role.description,
+        language,
+      }),
+    })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('API error');
+        return await res.json();
+      })
+      .then((result: any) => {
         setSimulation(result);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         setError('AI simülasyon senaryosu alınamadı.');
         setLoading(false);
       });
