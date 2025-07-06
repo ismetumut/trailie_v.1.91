@@ -36,8 +36,6 @@ import MockInterview from '@/components/interview/MockInterview';
 import InterviewEvaluation from '@/components/interview/InterviewEvaluation';
 import { CompanyLogin } from "@/components/company/CompanyLogin";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { generateDiscProfile, generateExpertiseProfile, AIDiscProfile, AIExpertiseProfile } from '@/lib/openai';
-import { generateRoleSimulation, AISimulationScenario } from '@/lib/openai';
 import { saveSimulationResult } from '@/lib/firebase';
 import NetworkingPage from '@/components/networking/NetworkingPage';
 import CoachingPage from '@/components/coaching/CoachingPage';
@@ -766,21 +764,26 @@ export default function Page() {
     if (appState === 'expertise-results' && expertiseResult && !aiExpertiseProfile && !aiLoading) {
       setAiLoading(true);
       setAiError(null);
-      
-      // Uzmanlık ve DISC sonuçlarını AI için formatla
       const expertiseData = JSON.stringify(expertiseResult);
       const discData = discResult ? JSON.stringify({
         scores: discResult.scores,
         dominant: discResult.dominant,
         description: discResult.description
       }) : undefined;
-      
-      generateExpertiseProfile(expertiseData, discData, language)
-        .then((profile) => {
+      fetch('/api/ai-expertise-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expertiseData, discData, language }),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error('API error');
+          return await res.json();
+        })
+        .then((profile: any) => {
           setAiExpertiseProfile(profile);
           setAiLoading(false);
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.error('AI Uzmanlık raporu hatası:', err);
           setAiError('AI uzmanlık raporu alınamadı.');
           setAiLoading(false);
