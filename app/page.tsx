@@ -741,12 +741,20 @@ export default function Page() {
         description: discResult.description
       };
       
-      generateDiscProfile(JSON.stringify(discData), language)
-        .then((profile) => {
+      fetch('/api/ai-disc-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ discData: JSON.stringify(discData), language }),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error('API error');
+          return await res.json();
+        })
+        .then((profile: any) => {
           setAiDiscProfile(profile);
           setAiLoading(false);
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.error('AI DISC raporu hatası:', err);
           setAiError('AI kişilik raporu alınamadı.');
           setAiLoading(false);
