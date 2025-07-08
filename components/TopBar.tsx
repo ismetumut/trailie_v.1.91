@@ -90,10 +90,15 @@ export default function TopBar({ onModuleSelect, onBack, onViewPackages, premium
             )}
           </div>
           {/* Başlık ve logo ortada, absolute ve sm: altında gizli */}
-          <div className="hidden sm:flex items-center gap-2 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none truncate max-w-[60vw] md:max-w-xs text-center">
+          <button
+            className="hidden sm:flex items-center gap-2 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none truncate max-w-[60vw] md:max-w-xs text-center hover:text-primary focus:outline-none"
+            onClick={() => onModuleSelect?.('dashboard')}
+            aria-label={language === 'tr' ? 'Ana Sayfa' : 'Home'}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          >
             <TrailieLogo className="w-7 h-7 md:w-8 md:h-8" />
             <span className="text-base md:text-xl font-bold text-gray-800">Trailie</span>
-          </div>
+          </button>
           {/* Sağda bildirim, profil ve dil seçici */}
           <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-shrink-0 ml-auto">
             <Popover open={notifOpen} onOpenChange={setNotifOpen}>

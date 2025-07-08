@@ -23,6 +23,7 @@ import PresentationTask from "./simulation/presentation-task";
 import AISimulationReport from "./AISimulationReport";
 import InterviewEvaluation from "./interview/InterviewEvaluation";
 import { getUserProgress } from '@/lib/firebase';
+import DigitalCareerTwin from './digital-career-twin/DigitalCareerTwin';
 
 export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (key: string) => void }) {
   const { user, userType } = useAuth();
@@ -34,6 +35,7 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
   const [progressLoading, setProgressLoading] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [showCareerTwin, setShowCareerTwin] = useState(false);
 
   if (!user && !userType) {
     return (
@@ -193,6 +195,10 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
     );
   }
 
+  if (showCareerTwin) {
+    return <DigitalCareerTwin />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <TopBar onModuleSelect={goToModule} onViewPackages={handleViewPackages} />
@@ -261,6 +267,7 @@ export default function CareerDashboard({ onModuleRoute }: { onModuleRoute?: (ke
                   <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-4 py-2 font-semibold text-sm transition" onClick={() => goToModule('cv')}>{language === 'tr' ? 'AI ile CV Oluştur' : 'Create Your CV with AI'}</Button>
                   <Button className="bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg px-4 py-2 font-semibold text-sm transition" onClick={() => goToModule('simulation')}>{language === 'tr' ? 'Simülasyonu Dene' : 'Try Simulation'}</Button>
                   <Button className="bg-muted hover:bg-muted/80 text-muted-foreground rounded-lg px-4 py-2 font-semibold text-sm transition" onClick={() => goToModule('jobs')}>{language === 'tr' ? '2 Yeni İş Fırsatı Seni Bekliyor' : '2 New Job Opportunities Await You'}</Button>
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 font-semibold text-sm transition" onClick={() => setShowCareerTwin(true)}>{language === 'tr' ? 'Dijital Kariyer İkizini Oluştur' : 'Create Digital Career Twin'}</Button>
                 </div>
               </div>
 
